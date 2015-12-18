@@ -18,15 +18,6 @@ void NodeModel::nodeSpecificCodeDown(){
 	case Cube:
 		glutSolidCube(1);
 		break;
-	case WireCube:
-		if (selectedID == ID)
-		{
-			glDisable(GL_LIGHTING);
-			glColor3f(0.0f, 1.0f, 0.0f);
-			glutWireCube(1);
-			glEnable(GL_LIGHTING);
-		} 
-		break;
 	case Teapot:
 		glutSolidTeapot(.67);
 		break;
