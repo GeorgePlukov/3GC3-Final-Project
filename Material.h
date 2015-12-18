@@ -1,6 +1,6 @@
 #ifndef MATERIAL_D
 #define MATERIAL_D
-#include "includes"
+#include "includes.h"
 
 
 class Material {
@@ -9,7 +9,7 @@ public:
 	float reflect;
 	// Constructor
 	Material(Param , Param, Param, float);
-	void enableMaterial();
+	void enable();
 };
 
 #endif

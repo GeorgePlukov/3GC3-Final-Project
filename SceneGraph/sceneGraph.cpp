@@ -1,5 +1,5 @@
 #include "sceneGraph.h"
-
+#include "../includes.h"
 SceneGraph::SceneGraph(){
 	rootNode = new Node();
 	currentNode = rootNode;

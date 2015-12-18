@@ -2,7 +2,7 @@
 #define __NODEMODEL_H__
 
 #include "node.h"
-#include <GL/glut.h>
+#include "../includes.h"
 
 enum ModelType
 {
@@ -15,7 +15,8 @@ enum ModelType
 class NodeModel:public Node
 {
 public:
-	NodeModel(ModelType whatType);	//constructor
+	NodeModel(ModelType whatType, Material *m);	//constructor
+	Material *m;
 	ModelType modelType;
 
 	virtual void nodeSpecificCodeDown();

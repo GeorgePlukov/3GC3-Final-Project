@@ -19,4 +19,5 @@
 #include "PMath/PPoint.h"
 #include "PMath/PVector.h"
 
-
+#include "Material.h"
+#include "Light.h"

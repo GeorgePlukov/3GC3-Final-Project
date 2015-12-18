@@ -5,14 +5,14 @@ const int HEIGHT = 600;
 const float ASPECT = WIDTH / HEIGHT;
 
 /* Rotations on the 3 axes */
-float xRotation = 0, yRotation = 0, zRotation = 0; 
+float xRotation = 0, yRotation = 0, zRotation = 0;
 
 /* The 6 direction vectors */
-PVector3f forward(0,0,-1);
-PVector3f back = -forward;
-PVector3f up(0,1,0);
+PVector3f forwardVec(0, 0, -1);
+PVector3f back = -forwardVec;
+PVector3f up(0, 1, 0);
 PVector3f down = -up;
-PVector3f left = up * forward;
+PVector3f left = up * forwardVec;
 PVector3f right = -left;
 
 /* Camera Vector for translations */
@@ -21,25 +21,26 @@ PVector3f cam(0.0f, 7.0f, 75.0f);
 const float cameraSpeed = 0.5f;
 const float mouseSensitivity = 0.01;
 
+/* Light Items */
+Light *light1;
+
+/* Material Definitions*/
+Material *m1;
+
 /* Scene Graph*/
 #include "SceneGraph/sceneGraph.h"
 SceneGraph *SG;
 
 /* Node ID's */
 int masterID = 0;
-int getID(){
+int getID() {
 	return masterID++;
 }
 
-
-
-
-
-
 /***************************************************************************************/
 
-	//function which will populate a sample graph 
-	void initGraph(){
+//function which will populate a sample graph
+void initGraph() {
 	//temporary place which holds out values
 	PPoint3f tmpPoint3f;
 
@@ -61,16 +62,16 @@ int getID(){
 	//MODEL
 	//we will now add a teapot model to the graph as a child of the
 	//transformation node
-	NodeModel *M1 = new NodeModel(Teapot);
+	// NodeModel *M1 = new NodeModel(Teapot, m1);
 	//insert the node into the graph
-	SG->insertChildNodeHere(M1);
+	// SG->insertChildNodeHere(M1);
 
 
 	//THE SAME FLOW CAN BE USED TO DYNAMICALLY ADD NODES
 	//DURING RUNTIME
 }
 
-																					
+
 /***************************************************************************************/
 
 void drawGround()
@@ -78,25 +79,28 @@ void drawGround()
 	int size = 300;
 	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_QUADS);
-	    for (int x = 0; x < size; x++)
-	    {
-	    	for (int z = 0; z < size*2; z++)
-	    	{
-	    		glVertex3f(x-size/2, 1.0f, -z+size/2);
-	    		glVertex3f(x+1-size/2, 1.0f, -z + size/2);
-	    		glVertex3f(x+1-size/2, 1.0f,-z-1+size/2);
-	    		glVertex3f(x-size/2, 1.0f, -z-1+size/2);
-	    	}
-	    }
+	for (int x = 0; x < size; x++)
+	{
+		for (int z = 0; z < size * 2; z++)
+		{
+			glNormal3f(0, 1, 0);
+			glVertex3f(x - size / 2, 1.0f, -z + size / 2);
+			glNormal3f(0, 1, 0);
+			glVertex3f(x + 1 - size / 2, 1.0f, -z + size / 2);
+			glNormal3f(0, 1, 0);
+			glVertex3f(x + 1 - size / 2, 1.0f, -z - 1 + size / 2);
+			glNormal3f(0, 1, 0);
+			glVertex3f(x - size / 2, 1.0f, -z - 1 + size / 2);
+		}
+	}
 	glEnd();
-	
+
 }
 
 void drawCubes()
 {
-	
 	glColor3f(1.0f, 0.0f, 0.0f);
-	for (int i = 0; i < 150; i+= 10)
+	for (int i = 0; i < 150; i += 10)
 	{
 		glPushMatrix();
 		float z = 70.0f - (float)i;
@@ -104,23 +108,21 @@ void drawCubes()
 		glutSolidCube(1);
 		glPopMatrix();
 	}
-	
-	
-	
+
 }
 
 /* Moves camera positions along a vector*/
 void moveCamera(PVector3f v, float amt)
 {
-	cam = cam + (v*amt);
+	cam = cam + (v * amt);
 	if (cam.z < -5.0f)
 	{
 		cam.z = 75.0f;
 	}
 }
 
-/* 
-	Sets up the camera, lighting and materials, 
+/*
+	Sets up the camera, lighting and materials,
 	then calls the draw function
 */
 void display()
@@ -130,25 +132,28 @@ void display()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	/*6 DOF camera controls*/
-	glTranslatef(-cam.x,-cam.y,-cam.z);
-	
-	glRotatef(-xRotation,1,0,0);
-	glRotatef(-yRotation,0,1,0);
-	glRotatef(-zRotation,0,0,1);
-    
+	glTranslatef(-cam.x, -cam.y, -cam.z);
+
+	glRotatef(-xRotation, 1, 0, 0);
+	glRotatef(-yRotation, 0, 1, 0);
+	glRotatef(-zRotation, 0, 0, 1);
+
 
 	glPushMatrix();
 
 	drawGround();
 	drawCubes();
-	moveCamera(forward, cameraSpeed);
-    
+	moveCamera(forwardVec, cameraSpeed);
+
 	glPopMatrix();
 
 	glPushMatrix();
+
+	light1->enable();
+
 	SG->draw();
 	glPopMatrix();
-	
+
 	glutSwapBuffers();
 
 	glutPostRedisplay();
@@ -170,17 +175,17 @@ void lockCamera()
 		zRotation = -20.0f;
 	if (zRotation > 20.0f)
 		zRotation = 20.0f;
-	
+
 }
 
-/* kbd -- the GLUT keyboard function 
+/* kbd -- the GLUT keyboard function
  *  key -- the key pressed
  *  x and y - mouse x and y coordinates at the time the function is called
  */
 void kbd(unsigned char key, int x, int y)
 {
 	/*Esc to exit the program*/
-	if(key == 27)
+	if (key == 27 || key == 'q')
 	{
 		exit(0);
 	}
@@ -207,25 +212,25 @@ void kbd(unsigned char key, int x, int y)
 }
 
 
-void special(int key, int x, int y){
+void special(int key, int x, int y) {
 	/* Use the arrow keys to move the selected light source around*/
-  	switch(key){
-     	/* Rotate Camera*/
-     	case GLUT_KEY_LEFT:
-	        zRotation--;
-	        break;
-      	case GLUT_KEY_RIGHT:
-       		zRotation++;
-        	break;
-      	case GLUT_KEY_UP:
-       		xRotation--;
-        	break;
-      	case GLUT_KEY_DOWN:
-	        xRotation++;
-	        break;
-  	}
+	switch (key) {
+	/* Rotate Camera*/
+	case GLUT_KEY_LEFT:
+		zRotation--;
+		break;
+	case GLUT_KEY_RIGHT:
+		zRotation++;
+		break;
+	case GLUT_KEY_UP:
+		xRotation--;
+		break;
+	case GLUT_KEY_DOWN:
+		xRotation++;
+		break;
+	}
 
-  	printf("Rotation: (%f, %f, %f)\n", xRotation, yRotation, zRotation);
+	printf("Rotation: (%f, %f, %f)\n", xRotation, yRotation, zRotation);
 }
 
 void registerCallbacks()
@@ -237,27 +242,46 @@ void registerCallbacks()
 }
 
 void init()
-{   
+{
 	/*enable Z buffer test, otherwise things appear in the order they're drawn*/
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 
+	glShadeModel(GL_SMOOTH);
 	glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
- 
-    /* Set our perspective */
-    gluPerspective(45.0f, ASPECT, 0.1f, 100.0f);
- 
-    /* Make sure we're chaning the model view and not the projection */
-    glMatrixMode(GL_MODELVIEW);
- 
-    /* Reset The View */
-    glLoadIdentity();
+	glLoadIdentity();
 
-    /* Colour of the background */
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	/* Set our perspective */
+	gluPerspective(45.0f, ASPECT, 0.1f, 100.0f);
 
-    SG = new SceneGraph();
-    initGraph();
+	/* Make sure we're chaning the model view and not the projection */
+	glMatrixMode(GL_MODELVIEW);
+
+	/* Reset The View */
+	glLoadIdentity();
+
+	/* Colour of the background */
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// Define our lights
+	Param pos = {0.0f, 10.0f, 0.0f, 1.0f};
+	Param spec = {0.9f, 0.9f, 0.9f, 1.0f};
+	Param dif = {0.5f, 0.5f, 0.5f, 1.0f};
+	Param amb = {0.1f, 0.2f, 0.1f, 1.0f};
+	light1 = new Light(1, pos, dif, spec, amb);
+
+
+	Param specM = {0.9f, 0.3f, 0.9f, 1.0f};
+	Param difM = {0.5f, 0.5f, 0.5f, 1.0f};
+	Param ambM = {0.5f, 0.5f, 0.5f, 1.0f};
+	float reflect = 65.0f;
+	m1 = new Material(specM, difM, ambM, reflect);
+	m1->enable();
+	light1->enable();
+
+	SG = new SceneGraph();
+	initGraph();
 
 }
 
@@ -273,8 +297,8 @@ void printStartMenu()
 
 void centerScreen()
 {
-	glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-WIDTH)/2,
-                       (glutGet(GLUT_SCREEN_HEIGHT)-HEIGHT)/2);
+	glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH) - WIDTH) / 2,
+	                       (glutGet(GLUT_SCREEN_HEIGHT) - HEIGHT) / 2);
 }
 
 int main(int argc, char** argv)
@@ -286,7 +310,7 @@ int main(int argc, char** argv)
 	centerScreen();
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("TITLE");
-    
+
 	init();
 
 	registerCallbacks();

@@ -1,9 +1,10 @@
 #include "nodeModel.h"
-
-NodeModel::NodeModel(ModelType whatType)
+#include "../includes.h" 
+NodeModel::NodeModel(ModelType whatType, Material *m)
 {
 	nodeType = model;
 	modelType = whatType;
+	this->m = m;
 	isDrawable = true;
 }
 
@@ -11,6 +12,7 @@ NodeModel::NodeModel(ModelType whatType)
 //which in this case means drawing the model
 void NodeModel::nodeSpecificCodeDown()
 {
+		
 	switch (modelType){
 	case Sphere:
 		glutSolidSphere(1, 12, 10);

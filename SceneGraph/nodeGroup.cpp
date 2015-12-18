@@ -1,5 +1,5 @@
 #include "nodeGroup.h"
-
+#include "../includes.h"
 NodeGroup::NodeGroup()
 {
 	nodeType = group;
