@@ -31,5 +31,30 @@ public:
 	
 };
 
+class PVector4f
+{
+public:
+	//public variables
+	float w,x,y,z;
+	float magnitude;
+
+	//Constructors
+	PVector4f();
+	PVector4f(float, float, float, float);
+	PVector4f(PPoint4f, PPoint4f);
+
+	//Public Functions
+	float calcMagnitude();
+	void normalize();
+	void giveValue();
+
+	//Math Methods
+	PVector4f operator +(const PVector4f&);
+	PVector4f operator -(const PVector4f&);
+	PVector4f operator -();
+	PVector4f operator *(const float);
+
+};
+
 
 #endif

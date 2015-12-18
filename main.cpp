@@ -1,446 +1,299 @@
+#include "includes.h"
 
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/freeglut.h>
-#endif
+const int WIDTH = 900;
+const int HEIGHT = 600;
+const float ASPECT = WIDTH / HEIGHT;
+
+/* Rotations on the 3 axes */
+float xRotation = 0, yRotation = 0, zRotation = 0; 
+
+/* The 6 direction vectors */
+PVector3f forward(0,0,-1);
+PVector3f back = -forward;
+PVector3f up(0,1,0);
+PVector3f down = -up;
+PVector3f left = up * forward;
+PVector3f right = -left;
+
+/* Camera Vector for translations */
+PVector3f cam(0.0f, 7.0f, 75.0f);
+
+const float cameraSpeed = 0.5f;
+const float mouseSensitivity = 0.01;
+
+/* Scene Graph*/
+#include "SceneGraph/sceneGraph.h"
+SceneGraph *SG;
+
+/* Node ID's */
+int masterID = 0;
+int getID(){
+	return masterID++;
+}
 
 
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-///////////////////////////////////////////////////////////////
-// DEFINITIONS
-///////////////////////////////////////////////////////////////
-#define FRAME_WIDTH 600
-#define FRAME_HEIGHT 600
 
 
-///////////////////////////////////////////////////////////////
-// GLOBAL VARIABLES
-///////////////////////////////////////////////////////////////
 
-// Camera *camera1 = NULL;
-// float camPos[] = {10, 10, 10};
 
-Light *light1 = NULL;
-Light *light2 = NULL;
-int currentLight = 0;
-int numberOfLights = 2;
+/***************************************************************************************/
 
-// // Scenegraph Variables
-// SceneGraph *SG;
-// Serializer *serializer;
-// int masterID = 0;
+	//function which will populate a sample graph 
+	void initGraph(){
+	//temporary place which holds out values
+	PPoint3f tmpPoint3f;
 
-int currentMat = 0;
-int numberOfMat = 5; // 0 + 4
-Material m, m1, m2, m3, m4;
 
-int currentObject;
+	//TRANSFORMATION
+	//a tranlation transformation node
+	//how much translation
+	tmpPoint3f.x = 5.0f;
+	tmpPoint3f.y = 3.0f;
+	tmpPoint3f.z = -10.0f;
+	//add the node as a child of root node
+	NodeTransform *T1 = new NodeTransform(Translate, tmpPoint3f);
+	//insert the node into the graph
+	SG->insertChildNodeHere(T1);
+	//go to the child node
+	SG->goToChild(0);
 
-///////////////////////////////////////////////////////////////
-// HELPER FUNCTIONS
-///////////////////////////////////////////////////////////////
 
-// int getID() {
-// 	return masterID++;
-// }
-///////////////////////////////////////////////////////////////
-// SCENE GRAPH HELPER FUNCTIONS
-///////////////////////////////////////////////////////////////
-// Adding an object to the scene graph requires a couple properties
-// First add a transition that starts empty ie move by (0,0,0)
-// If anything such as rotation or other methods to move or alter the model itself
-// that should be rendered in the scene graph then it would be added here as an additional node
-// Then add the model
-// void addObject(ModelType type) {
-// 	SG->goToRoot();
-// 	Vector3D tempVec3;
-// 	tempVec3.x = 0;
-// 	tempVec3.y = 0;
-// 	tempVec3.z = 0;
-// 	// Add the empty transform node
-// 	NodeTransform *t1 = new NodeTransform(Translate, tempVec3);
-// 	SG->insertChildNodeHere(t1);
+	//MODEL
+	//we will now add a teapot model to the graph as a child of the
+	//transformation node
+	NodeModel *M1 = new NodeModel(Teapot);
+	//insert the node into the graph
+	SG->insertChildNodeHere(M1);
 
-// 	// go to the transforms child
-// 	SG->goToChild(currentObject);
-// 	Material cur;
-// 	// Select the proper material
-// 	switch (currentMat) {
-// 	case 0:
-// 		cur = m;
-// 		break;
-// 	case 1:
-// 		cur = m1;
-// 		break;
-// 	case 2:
-// 		cur = m2;
-// 		break;
-// 	case 3:
-// 		cur = m3;
-// 		break;
-// 	case 4:
-// 		cur = m4;
-// 		break;
 
-// 	}
+	//THE SAME FLOW CAN BE USED TO DYNAMICALLY ADD NODES
+	//DURING RUNTIME
+}
 
-// 	// Select what node should be added to the scene graph
-// 	NodeModel *n;
-// 	switch (type) {
-// 	case Plane:
-// 		n = new NodeModel(Plane, cur);
-// 		break;
-// 	case Cube:
-// 		n = new NodeModel(Cube, cur);
-// 		break;
-// 	case Teapot:
-// 		n = new NodeModel(Teapot, cur);
-// 		break;
-// 	case Sphere:
-// 		n = new NodeModel(Sphere, cur);
-// 		break;
-// 	case Torus:
-// 		n = new NodeModel(Torus, cur);
-// 		break;
-// 	case Cone:
-// 		n = new NodeModel(Cone, cur);
-// 		printf("wtf\n");
-// 		break;
-// 	default:
-// 		break;
-// 	}
-// 	SG->insertChildNodeHere(n);
+																					
+/***************************************************************************************/
 
-// 	// increment the current obj counter
-// 	currentObject++;
-// }
-// void movObject(int id, float x, float y, float z) {
-// 	SG->goToRoot();
-// 	// Navigate to the correct child selected by ray casting
-// 	SG->goToChild(id);
+void drawGround()
+{
+	int size = 300;
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_QUADS);
+	    for (int x = 0; x < size; x++)
+	    {
+	    	for (int z = 0; z < size*2; z++)
+	    	{
+	    		glVertex3f(x-size/2, 1.0f, -z+size/2);
+	    		glVertex3f(x+1-size/2, 1.0f, -z + size/2);
+	    		glVertex3f(x+1-size/2, 1.0f,-z-1+size/2);
+	    		glVertex3f(x-size/2, 1.0f, -z-1+size/2);
+	    	}
+	    }
+	glEnd();
+	
+}
 
-// 	// Create a new node  based off the old node
-// 	Node * cN = SG->getCurrentNode();
-// 	//Transform the new node
-// 	cN->transformAct(x, y, z);
-
-// 	// Swap that shit bitch
-// 	SG->swapCurrentWith(cN);
-
-// }
-////////////////////////////////////////////////////////
-// IO HANDLERS
-////////////////////////////////////////////////////////
-void keyboardHandler(unsigned char key, int xIn, int yIn) {
-
-	switch (key) {
-	// Quit the program
-	case 'q':
-		exit(0);
-	// // Reset the scene to blank
-	// case 'r':
-	// 	SG = new SceneGraph();
-	// 	currentObject = 0;
-	// 	addObject(Plane);
-	// 	break;
-	// // Switch through the materials
-	// case 'm':
-	// 	currentMat = (currentMat + 1) % numberOfMat;
-	// 	break;
-	// // Switch between the light sources
-	// case 'y':
-	// 	currentLight = (currentLight + 1) % numberOfLights;
-	// 	break;
-	// // Load a scene from save file
-	// case 'l':
-	// 	break;
-	// // Save the current scene to a file
-	// case 'k':
-	// 	serializer->serializeSceneGraph();
-	// 	break;
-	// case 'w':
-	// 	movObject(currentObject - 1, 1.0f, 0.0f, 0.0f);
-	// 	break;
-	// case 'a':
-	// 	movObject(currentObject - 1, 0.0f, 0.0f, 1.0f);
-	// 	break;
-	// case 's':
-	// 	movObject(currentObject - 1, -1.0f, 0.0f, 0.0f);
-	// 	break;
-	// case 'd':
-	// 	movObject(currentObject - 1, 0.0f, 0.0f, -1.0f);
-	// 	break;
-	// case '1':
-	// 	addObject(Cube);
-	// 	break;
-	// case '2':
-	// 	addObject(Teapot);
-	// 	break;
-	// case '3':
-	// 	addObject(Sphere);
-	// 	break;
-	// case '4':
-	// 	addObject(Torus);
-	// 	break;
-	// case '5':
-	// 	addObject(Cone);
-	// 	break;
+void drawCubes()
+{
+	
+	glColor3f(1.0f, 0.0f, 0.0f);
+	for (int i = 0; i < 150; i+= 10)
+	{
+		glPushMatrix();
+		float z = 70.0f - (float)i;
+		glTranslatef(5.0f, 2.0f, z);
+		glutSolidCube(1);
+		glPopMatrix();
 	}
+	
+	
+	
+}
+
+/* Moves camera positions along a vector*/
+void moveCamera(PVector3f v, float amt)
+{
+	cam = cam + (v*amt);
+	if (cam.z < -5.0f)
+	{
+		cam.z = 75.0f;
+	}
+}
+
+/* 
+	Sets up the camera, lighting and materials, 
+	then calls the draw function
+*/
+void display()
+{
+	/* Clear the Screen */
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	/*6 DOF camera controls*/
+	glTranslatef(-cam.x,-cam.y,-cam.z);
+	
+	glRotatef(-xRotation,1,0,0);
+	glRotatef(-yRotation,0,1,0);
+	glRotatef(-zRotation,0,0,1);
+    
+
+	glPushMatrix();
+
+	drawGround();
+	drawCubes();
+	moveCamera(forward, cameraSpeed);
+    
+	glPopMatrix();
+
+	glPushMatrix();
+	SG->draw();
+	glPopMatrix();
+	
+	glutSwapBuffers();
+
 	glutPostRedisplay();
 }
 
-// void special(int key, int x, int y) {
-// 	/* arrow key presses move the camera */
-// 	switch (key) {
-// 	case GLUT_KEY_LEFT: 	camera1->decreaseX(1); break;
-// 	case GLUT_KEY_RIGHT: 	camera1->increaseX(1); break;
-// 	case GLUT_KEY_UP: 		camera1->decreaseZ(1); break;
-// 	case GLUT_KEY_DOWN: 	camera1->increaseZ(1); break;
-// 	case GLUT_KEY_HOME: 	camera1->decreaseY(1); break;
-// 	case GLUT_KEY_END: 		camera1->increaseY(1); break;
+void lockCamera()
+{
 
-// 	}
-// 	glutPostRedisplay();
-// }
+	if (cam.x < -10.0f)
+		cam.x = -10.0f;
+	if (cam.x > 10.0f)
+		cam.x = 10.0f;
+	if (cam.y < 5.0f)
+		cam.y = 5.0f;
+	if (cam.y > 10.0f)
+		cam.y = 10.0f;
 
-void displayHandler(void) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glMatrixMode(GL_MODELVIEW);
+	if (zRotation < -20.0f)
+		zRotation = -20.0f;
+	if (zRotation > 20.0f)
+		zRotation = 20.0f;
+	
+}
 
-	glLoadIdentity();
+/* kbd -- the GLUT keyboard function 
+ *  key -- the key pressed
+ *  x and y - mouse x and y coordinates at the time the function is called
+ */
+void kbd(unsigned char key, int x, int y)
+{
+	/*Esc to exit the program*/
+	if(key == 27)
+	{
+		exit(0);
+	}
 
-	// Make the camera look at the origin point
-	camera1->lookHere();
-	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m.amb);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m.dif);
-	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m.spec);
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m.reflect);
-	glClearColor(0.3, 0.3, 0.7, 1);
+	else if (key == 'w')
+	{
+		moveCamera(up, cameraSpeed);
+		//xRotation++;
+	} else if (key == 'a')
+	{
+		moveCamera(left, cameraSpeed);
+		zRotation --;
+	} else if (key == 'r')
+	{
+		moveCamera(down, cameraSpeed);
+		//xRotation--;
+	} else if (key == 's')
+	{
+		moveCamera(right, cameraSpeed);
+		zRotation ++;
+	}
 
-	light1->enable();
-	light2->enable();
-
-	glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
-
-	// Draw the scenegraph that contains all of the objects in the scene
-	SG->draw();
-
-
-	glutSwapBuffers();
+	lockCamera();
 }
 
 
+void special(int key, int x, int y){
+	/* Use the arrow keys to move the selected light source around*/
+  	switch(key){
+     	/* Rotate Camera*/
+     	case GLUT_KEY_LEFT:
+	        zRotation--;
+	        break;
+      	case GLUT_KEY_RIGHT:
+       		zRotation++;
+        	break;
+      	case GLUT_KEY_UP:
+       		xRotation--;
+        	break;
+      	case GLUT_KEY_DOWN:
+	        xRotation++;
+	        break;
+  	}
 
-///////////////////////////////////////////////////////////////
-// INIT
-///////////////////////////////////////////////////////////////
-
-void init() {
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glEnable(GL_DEPTH_TEST);
-	// glEnable(GL_CULL_FACE);
-	glEnable(GL_LIGHTING);
-	//glEnable(GL_COLOR_MATERIAL);
-	glShadeModel(GL_FLAT);
-
-
-	// Initialize all class variables
-	camera1 = new Camera(10.0f, 10.0f);
-
-
-	Param pos = { 10.0f, 10.0f, 10.0f, 1.0f};
-	Param spec = {0.9f, 0.9f, 0.9f, 1.0f};
-	Param dif = {0.5f, 0.5f, 0.5f, 1.0f};
-	Param amb = {0.1f, 0.2f, 0.1f, 1.0f};
-	light1 = new Light(0, pos, dif, spec, amb);
-
-	Param pos2 = { -10.f, 10.0f, -10.0f, 1.0f};
-	Param spec2 = {0.9f, 0.2, 0.2f, 1.0f};
-	Param dif2 = {0.5f, 0.3f, 0.9f, 1.0f};
-	Param amb2 = {0.1f, 0.2f, 0.3f, 1.0f};
-	light2 = new Light(1, pos2, dif2, spec2, amb2);
-
-	light1->enable();
-	light2->enable();
-
-	//////////// Mat
-	m.dif[0] = 0.9f;
-	m.dif[1] = 0.9f;
-	m.dif[2] = 0.8f;
-	m.dif[3] = 1.0f;
-
-	m.amb[0] = 0.9f;
-	m.amb[1] = 0.9f;
-	m.amb[2] = 0.1f;
-	m.amb[3] = 1.0f;
-
-	m.spec[0] = 0.9f;
-	m.spec[1] = 0.9f;
-	m.spec[2] = 0.2f;
-	m.spec[3] = 1.0f;
-
-	m.reflect = 50.0f;
-	////////////////// Mat 1
-	m1.dif[0] = 0.5f;
-	m1.dif[1] = 0.5f;
-	m1.dif[2] = 0.5f;
-	m1.dif[3] = 1.0f;
-
-	m1.amb[0] = 0.2f;
-	m1.amb[1] = 0.2f;
-	m1.amb[2] = 0.2f;
-	m1.amb[3] = 1.0f;
-
-	m1.spec[0] = 0.9f;
-	m1.spec[1] = 0.9f;
-	m1.spec[2] = 0.2f;
-	m1.spec[3] = 1.0f;
-
-	m1.reflect = 10.0f;
-	////////////////// mat 2
-	m2.dif[0] = 0.1f;
-	m2.dif[1] = 0.4f;
-	m2.dif[2] = 0.1f;
-	m2.dif[3] = 1.0f;
-
-	m2.amb[0] = 0.6f;
-	m2.amb[1] = 0.4f;
-	m2.amb[2] = 0.6f;
-	m2.amb[3] = 1.0f;
-
-	m2.spec[0] = 0.9f;
-	m2.spec[1] = 0.9f;
-	m2.spec[2] = 0.2f;
-	m2.spec[3] = 1.0f;
-
-	m2.reflect = 50.0f;
-
-	///////////////// Mat 3
-	m3.dif[0] = 0.112f;
-	m3.dif[1] = 0.3f;
-	m3.dif[2] = 0.9f;
-	m3.dif[3] = 1.0f;
-
-	m3.amb[0] = 0.1f;
-	m3.amb[1] = 0.2f;
-	m3.amb[2] = 0.3f;
-	m3.amb[3] = 1.0f;
-
-	m3.spec[0] = 0.23f;
-	m3.spec[1] = 0.2f;
-	m3.spec[2] = 0.83f;
-	m3.spec[3] = 1.0f;
-
-	m3.reflect = 65.0f;
-
-///////////////// Mat 4
-	m4.dif[0] = 0.42f;
-	m4.dif[1] = 0.1f;
-	m4.dif[2] = 0.0f;
-	m4.dif[3] = 1.0f;
-
-	m4.amb[0] = 0.1f;
-	m4.amb[1] = 0.4f;
-	m4.amb[2] = 0.1f;
-	m4.amb[3] = 1.0f;
-
-	m4.spec[0] = 0.43f;
-	m4.spec[1] = 0.1f;
-	m4.spec[2] = 0.83f;
-	m4.spec[3] = 1.0f;
-
-	m4.reflect = 66.0f;
-	SG = new SceneGraph();
-	serializer = new Serializer(SG);
-
+  	printf("Rotation: (%f, %f, %f)\n", xRotation, yRotation, zRotation);
 }
 
-// Initialize the scene graph
-void initSceneGraph() {
-	// define the variabel that gets incremented everu time a new object gets added to the scene
-	currentObject = 0;
-	// Add initial objects to the screen
-	addObject(Plane);
-	addObject(Teapot);
-
-	serializer->serializeSceneGraph();
-}
-
-
-void reshape(GLsizei width, GLsizei height) {
-	if (height == 0) height = 1;
-	GLfloat aspect = (GLfloat)width / (GLfloat)height;
-	glViewport(0, 0, width, height);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45.0f, aspect, 0.1f, 1000.0f);
-}
-
-///////////////////////////////
-// APPLICATION ENTRY POINT
-///////////////////////////////
-
-int main(int argc, char** argv) {
-
-
-	// GLUT - Initialzation
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-
-
-	// GLUT - Window Configuration
-	glutInitWindowSize(FRAME_WIDTH, FRAME_HEIGHT);
-	glutInitWindowPosition(50, 50);
-
-	// Initialize Application Environment
-
-	// Register Application Handlers
-	glutCreateWindow("Scene Raycasting");
-	glutDisplayFunc(displayHandler);
-	glutKeyboardFunc(keyboardHandler);
+void registerCallbacks()
+{
+	glutKeyboardFunc(kbd);
+	glutDisplayFunc(display);
 	glutSpecialFunc(special);
-	glutReshapeFunc(reshape);
-	printf("INSTRUCTIONS FOR USE: I changed some commands to make it a bit easier to use\n");
-	printf("Load and save:\n");
-	printf("k: save into a file\n");
-	printf("l: load from a file\n");
+	//glutPassiveMotionFunc(mouseMotion);
+}
 
-	printf("Placeing objects\n");
-	printf("1: place a cube\n");
-	printf("2: Place a Teapot\n");
-	printf("3: place a sphere\n");
-	printf("4: Place a Torus\n");
-	printf("5: Place a cone\n");
+void init()
+{   
+	/*enable Z buffer test, otherwise things appear in the order they're drawn*/
+	glEnable(GL_DEPTH_TEST);
 
-	printf("Material Change:\n");
-	printf("Press m to toggle through the materials, it will change the material of the next item\n");
+	glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+ 
+    /* Set our perspective */
+    gluPerspective(45.0f, ASPECT, 0.1f, 100.0f);
+ 
+    /* Make sure we're chaning the model view and not the projection */
+    glMatrixMode(GL_MODELVIEW);
+ 
+    /* Reset The View */
+    glLoadIdentity();
 
-	printf("Moving objects\n");
-	printf("wasd: Use wasd keys to move the object in the x, and z axies\n");
+    /* Colour of the background */
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	printf("Light Source movement\n");
-	printf("y: toggle between light sources\n");
-	printf("u/i: x axis of movement\n");
-	printf("o/p: y axis of movement\n");
-	printf("[/]: z axis of movement\n");
+    SG = new SceneGraph();
+    initGraph();
 
+}
 
+void printStartMenu()
+{
+	printf("\033[H\033[J");
+	printf("***********************************\n");
+	printf("****           TITLE            ***\n");
+	printf("***********************************\n");
+	printf("\n");
 
+}
 
+void centerScreen()
+{
+	glutInitWindowPosition((glutGet(GLUT_SCREEN_WIDTH)-WIDTH)/2,
+                       (glutGet(GLUT_SCREEN_HEIGHT)-HEIGHT)/2);
+}
+
+int main(int argc, char** argv)
+{
+	//glut initialization stuff:
+	// set the window size, display mode, and create the window
+	glutInit(&argc, argv);
+	glutInitWindowSize(WIDTH, HEIGHT);
+	centerScreen();
+	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+	glutCreateWindow("TITLE");
+    
 	init();
-	initSceneGraph();
 
-	// Begin GLUT Application Loop
+	registerCallbacks();
+	printStartMenu();
+
+	//start the program!
 	glutMainLoop();
-	return (0);
+
+	return 0;
 }
