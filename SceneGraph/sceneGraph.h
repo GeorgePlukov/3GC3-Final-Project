@@ -7,7 +7,8 @@
 #include "nodeModel.h"
 #include "nodeTransform.h"
 
-class SceneGraph{
+class SceneGraph
+{
 public:
 	SceneGraph();	//constructor
 
@@ -17,13 +18,14 @@ public:
 	void goToParent();
 	void insertChildNodeHere(Node *node);
 	void deleteThisNode();
-
+	void replaceThisNode(Node *node);
 	//Scene Graph Draw
 	void draw();
 
+
 private:
-	Node *currentNode;
 	Node *rootNode;
+	Node *currentNode;
 };
 
 #endif
