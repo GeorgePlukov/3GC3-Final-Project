@@ -143,7 +143,7 @@ void display()
 
 	drawGround();
 	drawCubes();
-	moveCamera(forwardVec, cameraSpeed);
+	// moveCamera(forwardVec, cameraSpeed);
 
 	glPopMatrix();
 
@@ -265,20 +265,20 @@ void init()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Define our lights
-	Param pos = {0.0f, 10.0f, 0.0f, 1.0f};
-	Param spec = {0.9f, 0.9f, 0.9f, 1.0f};
-	Param dif = {0.5f, 0.5f, 0.5f, 1.0f};
-	Param amb = {0.1f, 0.2f, 0.1f, 1.0f};
+	Param pos = {0.0f, 1.0f, 80.0f, 1.0f};
+	Param spec = {1.0f, 1.0f, 1.0f, 1.0f};
+	Param dif = {0.0f, 0.0f, 0.0f, 1.0f};
+	Param amb = {1.0f, 1.0f, 1.0f, 1.0f};
 	light1 = new Light(1, pos, dif, spec, amb);
 
-
-	Param specM = {0.9f, 0.3f, 0.9f, 1.0f};
-	Param difM = {0.5f, 0.5f, 0.5f, 1.0f};
-	Param ambM = {0.5f, 0.5f, 0.5f, 1.0f};
-	float reflect = 65.0f;
-	m1 = new Material(specM, difM, ambM, reflect);
-	m1->enable();
+	Param ambM = {0.05f, 0.0f, 0.0f, 1.0f};
+	Param difM = {0.5f, 0.4f, 0.4f, 1.0f};
+	Param specM = {0.7f, 0.04f, 0.04f, 1.0f};
+	float reflect = 0.78125f;
+	m1 = new Material(difM, specM, ambM, reflect);
 	light1->enable();
+
+	m1->enable();
 
 	SG = new SceneGraph();
 	initGraph();
@@ -287,7 +287,7 @@ void init()
 
 void printStartMenu()
 {
-	printf("\033[H\033[J");
+	// printf("\033[H\033[J");
 	printf("***********************************\n");
 	printf("****           TITLE            ***\n");
 	printf("***********************************\n");
