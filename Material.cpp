@@ -10,5 +10,9 @@ Material::Material(Param diff, Param spec, Param amb, float reflect) {
 	this.reflect = r;
 }
 void Material::enableMaterial() {
-
+	/* MATERIALS */
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, this.dif);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, this.amb);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, this.spec);
+	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, this.reflect);
 }

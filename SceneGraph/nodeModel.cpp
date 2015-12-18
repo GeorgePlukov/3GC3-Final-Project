@@ -11,6 +11,7 @@ NodeModel::NodeModel(ModelType whatType)
 //which in this case means drawing the model
 void NodeModel::nodeSpecificCodeDown()
 {
+		
 	switch (modelType){
 	case Sphere:
 		glutSolidSphere(1, 12, 10);

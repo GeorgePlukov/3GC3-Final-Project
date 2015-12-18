@@ -19,19 +19,6 @@
 #endif
 
 #include "structs.h"
-// float light_pos0[] = { 0.0f, 50.0f, 0.0f, 1.0f};
-// float amb0[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-// float diff0[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-// float spec0[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-// glLightfv(GL_LIGHT0, GL_AMBIENT, amb0);
-// 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diff0);
-// 	glLightfv(GL_LIGHT0, GL_SPECULAR, spec0);
-// 	glLightfv(GL_LIGHT0, GL_POSITION, light_pos0);
-//
-// float light_pos1[] = { 100.0f, 50.0f, 100.0f, 1.0f};
-// float amb1[4] = {0.1f, 0.2f, 0.1f, 1.0f};
-// float diff1[4] = {0.5f, 0.5f, 0.5f, 1.0f};
-// float spec1[4] = {0.5f, 0.5f, 0.5f, 1.0f};
 // Constructor
 Light::Light(int glLight, Param posIn, Param diffIn , Param specIn, Param ambIn) {
 	pos = posIn;
@@ -53,7 +40,6 @@ void Light::enable() {
 		glEnable(GL_LIGHT1);
 	case 3:
 		glEnable(GL_LIGHT2);
-
 		break;
 
 	}
