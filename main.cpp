@@ -8,11 +8,11 @@ const float ASPECT = WIDTH / HEIGHT;
 float xRotation = 0, yRotation = 0, zRotation = 0;
 
 /* The 6 direction vectors */
-PVector3f forward(0, 0, -1);
-PVector3f back = -forward;
+PVector3f forwardVec(0, 0, -1);
+PVector3f back = -forwardVec;
 PVector3f up(0, 1, 0);
 PVector3f down = -up;
-PVector3f left = up * forward;
+PVector3f left = up * forwardVec;
 PVector3f right = -left;
 
 /* Camera Vector for translations */
@@ -97,19 +97,19 @@ void drawGround()
 
 }
 
-// void drawCubes()
-// {
-// 	glColor3f(1.0f, 0.0f, 0.0f);
-// 	for (int i = 0; i < 150; i += 10)
-// 	{
-// 		glPushMatrix();
-// 		float z = 70.0f - (float)i;
-// 		glTranslatef(5.0f, 2.0f, z);
-// 		glutSolidCube(1);
-// 		glPopMatrix();
-// 	}
+void drawCubes()
+{
+	glColor3f(1.0f, 0.0f, 0.0f);
+	for (int i = 0; i < 150; i += 10)
+	{
+		glPushMatrix();
+		float z = 70.0f - (float)i;
+		glTranslatef(5.0f, 2.0f, z);
+		glutSolidCube(1);
+		glPopMatrix();
+	}
 
-// }
+}
 
 /* Moves camera positions along a vector*/
 void moveCamera(PVector3f v, float amt)
@@ -142,8 +142,8 @@ void display()
 	glPushMatrix();
 
 	drawGround();
-	// drawCubes();
-	moveCamera(forward, cameraSpeed);
+	drawCubes();
+	moveCamera(forwardVec, cameraSpeed);
 
 	glPopMatrix();
 
@@ -276,7 +276,7 @@ void init()
 	Param difM = {0.5f, 0.5f, 0.5f, 1.0f};
 	Param ambM = {0.5f, 0.5f, 0.5f, 1.0f};
 	float reflect = 65.0f;
-	m1 = new Material(specM, difM,ambM,reflect);
+	m1 = new Material(specM, difM, ambM, reflect);
 	m1->enable();
 	light1->enable();
 
