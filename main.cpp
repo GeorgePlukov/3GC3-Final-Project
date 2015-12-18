@@ -62,9 +62,9 @@ void initGraph() {
 	//MODEL
 	//we will now add a teapot model to the graph as a child of the
 	//transformation node
-	NodeModel *M1 = new NodeModel(Teapot, m1);
+	// NodeModel *M1 = new NodeModel(Teapot, m1);
 	//insert the node into the graph
-	SG->insertChildNodeHere(M1);
+	// SG->insertChildNodeHere(M1);
 
 
 	//THE SAME FLOW CAN BE USED TO DYNAMICALLY ADD NODES
@@ -83,9 +83,13 @@ void drawGround()
 	{
 		for (int z = 0; z < size * 2; z++)
 		{
+			glNormal3f(0, 1, 0);
 			glVertex3f(x - size / 2, 1.0f, -z + size / 2);
+			glNormal3f(0, 1, 0);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z + size / 2);
+			glNormal3f(0, 1, 0);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z - 1 + size / 2);
+			glNormal3f(0, 1, 0);
 			glVertex3f(x - size / 2, 1.0f, -z - 1 + size / 2);
 		}
 	}
@@ -93,22 +97,19 @@ void drawGround()
 
 }
 
-void drawCubes()
-{
+// void drawCubes()
+// {
+// 	glColor3f(1.0f, 0.0f, 0.0f);
+// 	for (int i = 0; i < 150; i += 10)
+// 	{
+// 		glPushMatrix();
+// 		float z = 70.0f - (float)i;
+// 		glTranslatef(5.0f, 2.0f, z);
+// 		glutSolidCube(1);
+// 		glPopMatrix();
+// 	}
 
-	glColor3f(1.0f, 0.0f, 0.0f);
-	for (int i = 0; i < 150; i += 10)
-	{
-		glPushMatrix();
-		float z = 70.0f - (float)i;
-		glTranslatef(5.0f, 2.0f, z);
-		glutSolidCube(1);
-		glPopMatrix();
-	}
-
-
-
-}
+// }
 
 /* Moves camera positions along a vector*/
 void moveCamera(PVector3f v, float amt)
@@ -141,13 +142,12 @@ void display()
 	glPushMatrix();
 
 	drawGround();
-	drawCubes();
-	// moveCamera(forward, cameraSpeed);
+	// drawCubes();
+	moveCamera(forward, cameraSpeed);
 
 	glPopMatrix();
 
 	glPushMatrix();
-
 
 	light1->enable();
 
@@ -246,7 +246,9 @@ void init()
 	/*enable Z buffer test, otherwise things appear in the order they're drawn*/
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
 
+	glShadeModel(GL_SMOOTH);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
@@ -263,17 +265,19 @@ void init()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Define our lights
-	Param pos = { 10.0f, 10.0f, 10.0f, 1.0f};
+	Param pos = {0.0f, 10.0f, 0.0f, 1.0f};
 	Param spec = {0.9f, 0.9f, 0.9f, 1.0f};
 	Param dif = {0.5f, 0.5f, 0.5f, 1.0f};
 	Param amb = {0.1f, 0.2f, 0.1f, 1.0f};
-	light1 = new Light(0, pos, dif, spec, amb);
+	light1 = new Light(1, pos, dif, spec, amb);
 
 
-	Param specM = {0.9f, 0.9f, 0.9f, 1.0f};
+	Param specM = {0.9f, 0.3f, 0.9f, 1.0f};
 	Param difM = {0.5f, 0.5f, 0.5f, 1.0f};
-	Param ambM = {0.1f, 0.2f, 0.1f, 1.0f};
-	float reflect = 55.0f;
+	Param ambM = {0.5f, 0.5f, 0.5f, 1.0f};
+	float reflect = 65.0f;
+	m1 = new Material(specM, difM,ambM,reflect);
+	m1->enable();
 	light1->enable();
 
 	SG = new SceneGraph();

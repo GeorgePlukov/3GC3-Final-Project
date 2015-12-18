@@ -9,7 +9,7 @@ public:
 	float reflect;
 	// Constructor
 	Material(Param , Param, Param, float);
-	void enableMaterial();
+	void enable();
 };
 
 #endif
