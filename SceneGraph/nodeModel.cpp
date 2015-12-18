@@ -1,9 +1,10 @@
 #include "nodeModel.h"
 #include "../includes.h" 
-NodeModel::NodeModel(ModelType whatType)
+NodeModel::NodeModel(ModelType whatType, Material *m)
 {
 	nodeType = model;
 	modelType = whatType;
+	this->m = m;
 	isDrawable = true;
 }
 

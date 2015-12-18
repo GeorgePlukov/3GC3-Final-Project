@@ -62,7 +62,7 @@ void initGraph() {
 	//MODEL
 	//we will now add a teapot model to the graph as a child of the
 	//transformation node
-	NodeModel *M1 = new NodeModel(Teapot);
+	NodeModel *M1 = new NodeModel(Teapot, m1);
 	//insert the node into the graph
 	SG->insertChildNodeHere(M1);
 
