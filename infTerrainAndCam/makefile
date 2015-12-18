@@ -5,6 +5,7 @@ CFLAGS=-g -std=c++11
 CC=g++
 EXEEXT=
 MATH_LIB = PMath
+SG_LIB = SceneGraph
 
 # Windows (cygwin)
 ifeq "$(OS)" "Windows_NT"
@@ -25,8 +26,8 @@ PROGRAM_NAME= prog
 run: $(PROGRAM_NAME)
 	./$(PROGRAM_NAME)$(EXEEXT)
 
-$(PROGRAM_NAME): main.o $(MATH_LIB)/PVector.o $(MATH_LIB)/PPoint.o
+$(PROGRAM_NAME): main.o $(MATH_LIB)/PVector.o $(MATH_LIB)/PPoint.o $(SG_LIB)/node.o $(SG_LIB)/nodeGroup.o $(SG_LIB)/nodeModel.o $(SG_LIB)/nodeTransform.o $(SG_LIB)/sceneGraph.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
-	$(RM) *.o $(PROGRAM_NAME)$(EXEEXT) $(MATH_LIB)/*.o
+	$(RM) *.o $(PROGRAM_NAME)$(EXEEXT) $(MATH_LIB)/*.o $(SG_LIB)/*.o

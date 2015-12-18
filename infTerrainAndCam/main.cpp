@@ -21,6 +21,58 @@ PVector3f cam(0.0f, 7.0f, 75.0f);
 const float cameraSpeed = 0.5f;
 const float mouseSensitivity = 0.01;
 
+/* Scene Graph*/
+#include "SceneGraph/sceneGraph.h"
+SceneGraph *SG;
+
+/* Node ID's */
+int masterID = 0;
+int getID(){
+	return masterID++;
+}
+
+
+
+
+
+
+/***************************************************************************************/
+
+	//function which will populate a sample graph 
+	void initGraph(){
+	//temporary place which holds out values
+	PPoint3f tmpPoint3f;
+
+
+	//TRANSFORMATION
+	//a tranlation transformation node
+	//how much translation
+	tmpPoint3f.x = 5.0f;
+	tmpPoint3f.y = 3.0f;
+	tmpPoint3f.z = -10.0f;
+	//add the node as a child of root node
+	NodeTransform *T1 = new NodeTransform(Translate, tmpPoint3f);
+	//insert the node into the graph
+	SG->insertChildNodeHere(T1);
+	//go to the child node
+	SG->goToChild(0);
+
+
+	//MODEL
+	//we will now add a teapot model to the graph as a child of the
+	//transformation node
+	NodeModel *M1 = new NodeModel(Teapot);
+	//insert the node into the graph
+	SG->insertChildNodeHere(M1);
+
+
+	//THE SAME FLOW CAN BE USED TO DYNAMICALLY ADD NODES
+	//DURING RUNTIME
+}
+
+																					
+/***************************************************************************************/
+
 void drawGround()
 {
 	int size = 300;
@@ -91,6 +143,10 @@ void display()
 	drawCubes();
 	moveCamera(forward, cameraSpeed);
     
+	glPopMatrix();
+
+	glPushMatrix();
+	SG->draw();
 	glPopMatrix();
 	
 	glutSwapBuffers();
@@ -199,6 +255,9 @@ void init()
 
     /* Colour of the background */
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+    SG = new SceneGraph();
+    initGraph();
 
 }
 

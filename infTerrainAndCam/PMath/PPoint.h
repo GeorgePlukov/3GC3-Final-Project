@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 
-class PPoint3f {
+class PPoint3f 
+{
 public:
 	//Public Variables
 	float x,y,z;
@@ -14,4 +15,17 @@ public:
 
 	void giveValue();
 };
+
+class PPoint4f
+{
+public:
+	float w,x,y,z;
+
+	//Constructors
+	PPoint4f();
+	PPoint4f(float, float, float, float);
+
+	void giveValue();
+};
+
 #endif
