@@ -1,6 +1,6 @@
 #include "node.h"
 #include <stdio.h>
-
+#include "../includes.h"
 Node::Node()
 {	
 	ID = getID();

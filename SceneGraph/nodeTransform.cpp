@@ -1,5 +1,5 @@
 #include "nodeTransform.h"
-
+#include "../includes.h"
 //for gltranslate and gl scale
 NodeTransform::NodeTransform(transformType whatType, PPoint3f point3f){
 	nodeType = transformation;

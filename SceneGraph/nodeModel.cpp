@@ -1,5 +1,5 @@
 #include "nodeModel.h"
-
+#include "../includes.h" 
 NodeModel::NodeModel(ModelType whatType)
 {
 	nodeType = model;

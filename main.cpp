@@ -22,7 +22,10 @@ const float cameraSpeed = 0.5f;
 const float mouseSensitivity = 0.01;
 
 /* Light Items */
-Light *light1 = NULL;
+Light *light1;
+
+/* Material Definitions*/
+Material *m1;
 
 /* Scene Graph*/
 #include "SceneGraph/sceneGraph.h"
@@ -33,11 +36,6 @@ int masterID = 0;
 int getID() {
 	return masterID++;
 }
-
-
-
-
-
 
 /***************************************************************************************/
 
@@ -144,13 +142,13 @@ void display()
 
 	drawGround();
 	drawCubes();
-	moveCamera(forward, cameraSpeed);
+	// moveCamera(forward, cameraSpeed);
 
 	glPopMatrix();
 
 	glPushMatrix();
 
-	
+
 	light1->enable();
 
 	SG->draw();
@@ -264,13 +262,18 @@ void init()
 	/* Colour of the background */
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-
+	// Define our lights
 	Param pos = { 10.0f, 10.0f, 10.0f, 1.0f};
 	Param spec = {0.9f, 0.9f, 0.9f, 1.0f};
 	Param dif = {0.5f, 0.5f, 0.5f, 1.0f};
 	Param amb = {0.1f, 0.2f, 0.1f, 1.0f};
 	light1 = new Light(0, pos, dif, spec, amb);
 
+
+	Param specM = {0.9f, 0.9f, 0.9f, 1.0f};
+	Param difM = {0.5f, 0.5f, 0.5f, 1.0f};
+	Param ambM = {0.1f, 0.2f, 0.1f, 1.0f};
+	float reflect = 55.0f;
 	light1->enable();
 
 	SG = new SceneGraph();

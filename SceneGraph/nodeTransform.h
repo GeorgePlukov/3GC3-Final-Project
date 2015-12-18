@@ -1,7 +1,6 @@
 #ifndef __NODETRANSFORM_H__	//guard against cyclic dependancy
 #define __NODETRANSFORM_H__
 
-#include <GL/glut.h>
 #include "node.h"
 #include "../PMath/PPoint.h"
 

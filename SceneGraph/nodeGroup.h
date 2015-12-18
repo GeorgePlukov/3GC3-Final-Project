@@ -2,7 +2,7 @@
 #define __NODEGROUP_H__
 
 #include "node.h"
-#include <GL/glut.h>
+
 
 class NodeGroup: public Node
 {
