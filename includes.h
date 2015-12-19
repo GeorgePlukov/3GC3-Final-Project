@@ -20,5 +20,7 @@
 #include "PMath/PPoint.h"
 #include "PMath/PVector.h"
 
+#include "PPMLoader.h"
+
 #include "Material.h"
 #include "Light.h"

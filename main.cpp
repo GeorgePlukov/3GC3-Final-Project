@@ -33,6 +33,10 @@ Material *m1;
 /* Scene Graph*/
 #include "SceneGraph/sceneGraph.h"
 SceneGraph *SG;
+/* Texture */
+GLubyte* snailTex;
+int width, height, maks;
+GLuint textures[1];
 
 /* Node ID's */
 int masterID = 0;
@@ -243,6 +247,10 @@ void init()
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
 
+	glEnable(GL_TEXTURE_2D);
+	//generate 2 texture IDs, store them in array "textures"
+	glGenTextures(1, textures);
+
 	glShadeModel(GL_SMOOTH);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -275,6 +283,17 @@ void init()
 	
 	light1->enable();
 	m1->enable();
+	// Create an instance of ppm loader
+	PPMLoader *ppm = new PPMLoader();
+	// LOAD TEXTURE
+	snailTex = ppm->loadPPM("textures/wood.ppm", &width, &height, &maks);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, snailTex);
+
 
 	SG = new SceneGraph();
 	initGraph();

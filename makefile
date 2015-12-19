@@ -26,7 +26,7 @@ PROGRAM_NAME= StarFoxClone
 run: $(PROGRAM_NAME)
 	./$(PROGRAM_NAME)$(EXEEXT)
 
-$(PROGRAM_NAME): main.o $(MATH_LIB)/PVector.o $(MATH_LIB)/PPoint.o $(SG_LIB)/node.o $(SG_LIB)/nodeGroup.o $(SG_LIB)/nodeModel.o $(SG_LIB)/nodeTransform.o $(SG_LIB)/sceneGraph.o Light.o Material.o StarfoxUtils.o
+$(PROGRAM_NAME): main.o $(MATH_LIB)/PVector.o $(MATH_LIB)/PPoint.o $(SG_LIB)/node.o $(SG_LIB)/nodeGroup.o $(SG_LIB)/nodeModel.o $(SG_LIB)/nodeTransform.o $(SG_LIB)/sceneGraph.o Light.o Material.o StarfoxUtils.o PPMLoader.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
 
 clean:
