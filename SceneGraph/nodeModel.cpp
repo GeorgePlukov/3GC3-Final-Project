@@ -50,19 +50,19 @@ void NodeModel::drawGround()
 		for (int z = 0; z < size * 2; z++)
 		{
 			glNormal3f(0, 1, 0.5);
-			glTexCoord2f(0, 0);
+			glTexCoord2f(1, 0);
 			glVertex3f(x - size / 2, 1.0f, -z + size / 2);
 
 			glNormal3f(0, 1, 0.5);
-			glTexCoord2f(0, 1);
+			glTexCoord2f(0, 0);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z + size / 2);
 
 			glNormal3f(0, 1, 0.5);
-			glTexCoord2f(1, 1);
+			glTexCoord2f(0, 1);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z - 1 + size / 2);
 
 			glNormal3f(0, 1, 0.5);
-			glTexCoord2f(1, 0);
+			glTexCoord2f(1, 1);
 			glVertex3f(x - size / 2, 1.0f, -z - 1 + size / 2);
 		}
 	}

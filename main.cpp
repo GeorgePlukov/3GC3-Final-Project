@@ -19,7 +19,7 @@ PVector3f leftVec = upVec * forwardVec;
 PVector3f rightVec = -leftVec;
 
 /* Camera Vector for translations */
-PVector3f cam(0.0f, 7.0f, 75.0f);
+PVector3f cam(0.0f, 2.0f, 75.0f);
 
 const float cameraSpeed = 0.5f;
 const float mouseSensitivity = 0.01;
@@ -34,7 +34,7 @@ Material *m1;
 #include "SceneGraph/sceneGraph.h"
 SceneGraph *SG;
 /* Texture */
-GLubyte* snailTex;
+GLubyte* woodTex;
 int width, height, maks;
 GLuint textures[1];
 
@@ -275,17 +275,17 @@ void init()
 	m1 = new Material(difM, specM, ambM, reflect);
 	
 	light1->enable();
-	m1->enable();
+	//m1->enable();
 	// Create an instance of ppm loader
 	PPMLoader *ppm = new PPMLoader();
 	// LOAD TEXTURE
-	snailTex = ppm->loadPPM("textures/wood.ppm", &width, &height, &maks);
+	woodTex = ppm->loadPPM("textures/wood2.ppm", &width, &height, &maks);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, snailTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, woodTex);
 
 
 	SG = new SceneGraph();
