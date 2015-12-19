@@ -279,7 +279,7 @@ void init()
 	// Create an instance of ppm loader
 	PPMLoader *ppm = new PPMLoader();
 	// LOAD TEXTURE
-	snailTex = ppm->loadPPM("textures/snail_a.ppm", &width, &height, &maks);
+	snailTex = ppm->loadPPM("textures/wood.ppm", &width, &height, &maks);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
