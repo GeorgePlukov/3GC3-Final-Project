@@ -5,12 +5,12 @@ const int HEIGHT = 600;
 const float ASPECT = WIDTH / HEIGHT;
 
 enum State {MAIN, GAME, LEADERBOARD};
-State currentState = GAME;
+State currentState = MAIN;
 
 
 // Text for the main screen of the game
 char game[] = { 'G', 'A', 'M', 'E', '\0' };
-char play[] = { '1', '.','P', 'l', 'a', 'y', '\0' };
+char play[] = { '1', '.', 'P', 'l', 'a', 'y', '\0' };
 char leader[] = { '2', '.', 'L', 'e', 'a', 'd', 'e', 'r', 'b', 'o', 'a', 'r', 'd', '\0' };
 char quit[] = { 'E', 'S', 'C', '.', ' ', 'Q', 'U', 'I', 'T', '\0' };
 
@@ -257,7 +257,11 @@ void gameKeyboard(unsigned char key, int x, int y) {
 
 }
 void mainKeyboard(unsigned char key, int x, int y) {
-
+	if (key == '1') {
+		currentState = GAME;
+	} else if (key == '2') {
+		currentState = LEADERBOARD;
+	}
 }
 
 void leaderboardKeyboard(unsigned char key, int x, int y) {}
@@ -412,7 +416,7 @@ int main(int argc, char** argv)
 	glutInitWindowSize(WIDTH, HEIGHT);
 	centerScreen();
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("TITLE");
+	glutCreateWindow("GAMEGAME");
 
 	init();
 
