@@ -7,6 +7,9 @@ const float ASPECT = WIDTH / HEIGHT;
 /* Rotations on the 3 axes */
 float xRotation = 0, yRotation = 0, zRotation = 0;
 
+/* Starfox Utils */
+StarfoxUtils utils;
+
 /* The 6 direction vectors */
 PVector3f forwardVec(0, 0, -1);
 PVector3f backVec = -forwardVec;
@@ -43,10 +46,33 @@ void initGraph() {
 	NodeModel *model;
 
 	/*Initially, draw ground*/
-	vector<ModelType> models;
-	models.push_back(Ground);
+	group = new NodeGroup();
+	SG->insertChildNodeHere(group);
+	SG->goToChild(0);
 
-	for (int i = 0; i < models.size(); i++)
+	/*Apply rotation to ground*/
+	rotation = new NodeTransform(Rotate);
+	SG->insertChildNodeHere(rotation);
+	SG->goToChild(0);
+
+	/* Apply scaling to ground*/
+	scale = new NodeTransform(Scale);
+	SG->insertChildNodeHere(scale);
+	SG->goToChild(0);
+
+	/* Apply translation to ground*/
+	translation = new NodeTransform(Translate);
+	SG->insertChildNodeHere(translation);
+	SG->goToChild(0);
+
+	/* Draw Ground*/
+	model = new NodeModel(Ground);
+	SG->insertChildNodeHere(model);
+
+	SG->goToRoot();
+
+	/* Add 10 buildings for now */
+	for (int i = 1; i < 31; i++)
 	{
 
 		group = new NodeGroup();
@@ -59,17 +85,17 @@ void initGraph() {
 		SG->goToChild(0);
 
 		/* Apply scaling to each model*/
-		scale = new NodeTransform(Scale);
+		scale = new NodeTransform(Scale, utils.getRandomBuildingScaling());
 		SG->insertChildNodeHere(scale);
 		SG->goToChild(0);
 
 		/* Apply translation to each model*/
-		translation = new NodeTransform(Translate);
+		translation = new NodeTransform(Translate, utils.getRandomBuildingTranslation());
 		SG->insertChildNodeHere(translation);
 		SG->goToChild(0);
 
 		/* Draw each model */
-		model = new NodeModel(models[i]);
+		model = new NodeModel(Building);
 		SG->insertChildNodeHere(model);
 
 		SG->goToRoot();
@@ -120,8 +146,8 @@ void display()
 	//light1->enable();
 
 	SG->draw();
-	drawCubes();
-	// moveCamera(forwardVec, cameraSpeed);
+	//drawCubes();
+	moveCamera(forwardVec, cameraSpeed);
 
 	glutSwapBuffers();
 
@@ -161,8 +187,8 @@ void kbd(unsigned char key, int x, int y)
 
 	else if (key == 'w')
 	{
-		moveCamera(forwardVec, cameraSpeed);
-		//moveCamera(upVec, cameraSpeed);
+		//moveCamera(forwardVec, cameraSpeed);
+		moveCamera(upVec, cameraSpeed);
 		//xRotation++;
 	} else if (key == 'a')
 	{
@@ -170,8 +196,8 @@ void kbd(unsigned char key, int x, int y)
 		zRotation --;
 	} else if (key == 'r')
 	{
-		moveCamera(backVec, cameraSpeed);
-		//moveCamera(downVec, cameraSpeed);
+		//moveCamera(backVec, cameraSpeed);
+		moveCamera(downVec, cameraSpeed);
 		//xRotation--;
 	} else if (key == 's')
 	{

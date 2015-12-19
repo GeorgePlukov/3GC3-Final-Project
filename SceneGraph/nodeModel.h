@@ -8,7 +8,7 @@ enum ModelType
 {
 	Helicopter,
 	Ground,
-	Wall,
+	Building,
 	Target
 };
 

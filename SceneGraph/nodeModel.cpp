@@ -31,8 +31,8 @@ void NodeModel::nodeSpecificCodeDown()
 	case Ground:
 		drawGround();
 		break;
-	case Wall:
-		//TODO
+	case Building:
+		glutSolidCube(1);
 		break;
 	case Target:
 		//TODO
@@ -49,13 +49,13 @@ void NodeModel::drawGround()
 	{
 		for (int z = 0; z < size * 2; z++)
 		{
-			glNormal3f(0, 1, 0);
+			glNormal3f(0, 1, 0.5);
 			glVertex3f(x - size / 2, 1.0f, -z + size / 2);
-			glNormal3f(0, 1, 0);
+			glNormal3f(0, 1, 0.5);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z + size / 2);
-			glNormal3f(0, 1, 0);
+			glNormal3f(0, 1, 0.5);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z - 1 + size / 2);
-			glNormal3f(0, 1, 0);
+			glNormal3f(0, 1, 0.5);
 			glVertex3f(x - size / 2, 1.0f, -z - 1 + size / 2);
 		}
 	}

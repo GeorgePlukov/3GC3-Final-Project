@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <string>
 
+#include "StarfoxUtils.h"
 #include "PMath/PPoint.h"
 #include "PMath/PVector.h"
 
