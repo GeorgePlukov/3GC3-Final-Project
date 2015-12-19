@@ -69,7 +69,7 @@ void generateGround() {
 	SG->goToChild(0);
 
 	/* Draw Ground*/
-	model = new NodeModel(Ground);
+	model = new NodeModel(Ground, textures[0]);
 	SG->insertChildNodeHere(model);
 
 	SG->goToRoot();
@@ -106,7 +106,7 @@ void generateRandomBuildings(int numOfBuildings)
 		SG->goToChild(0);
 
 		/* Draw each model */
-		model = new NodeModel(Building);
+		model = new NodeModel(Building, textures[1]);
 		SG->insertChildNodeHere(model);
 
 		SG->goToRoot();
