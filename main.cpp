@@ -113,15 +113,47 @@ void generateRandomBuildings(int numOfBuildings)
 	}
 }
 
+void tmpBuildings(int i, float z)
+{
+	NodeGroup *group;
+	NodeTransform *rotation, *scale, *translation;
+	NodeModel *model;
+
+	group = new NodeGroup();
+	SG->insertChildNodeHere(group);
+	SG->goToChild(i);
+
+	/*Apply rotation to each model*/
+	rotation = new NodeTransform(Rotate);
+	SG->insertChildNodeHere(rotation);
+	SG->goToChild(0);
+
+	/* Apply scaling to each model*/
+	scale = new NodeTransform(Scale, utils.getRandomBuildingScaling());
+	SG->insertChildNodeHere(scale);
+	SG->goToChild(0);
+
+
+	PPoint3f in_the_dist;
+	in_the_dist.x = 5;
+	in_the_dist.y = 0;
+	in_the_dist.z = z;
+	/* Apply translation to each model*/
+	translation = new NodeTransform(Translate, in_the_dist);
+	SG->insertChildNodeHere(translation);
+	SG->goToChild(0);
+
+	/* Draw each model */
+	model = new NodeModel(Building);
+	SG->insertChildNodeHere(model);
+
+	SG->goToRoot();
+}
+
 /* Moves camera positions along a vector*/
 void moveCamera(PVector3f v, float amt)
 {
 	cam = cam + (v * amt);
-	if (cam.z < -10.0f)
-	{
-		cam.z = 75.0f;
-		generateRandomBuildings(20);
-	}
 }
 
 /*
@@ -144,7 +176,7 @@ void display()
 	//light1->enable();
 
 	SG->draw();
-	moveCamera(forwardVec, cameraSpeed);
+	//moveCamera(forwardVec, cameraSpeed);
 
 	glutSwapBuffers();
 
@@ -174,6 +206,8 @@ void lockCamera()
  *  key -- the key pressed
  *  x and y - mouse x and y coordinates at the time the function is called
  */
+float gf = 60;
+int ip = 1;
 void kbd(unsigned char key, int x, int y)
 {
 	/*Esc to exit the program*/
@@ -184,22 +218,33 @@ void kbd(unsigned char key, int x, int y)
 
 	else if (key == 'w')
 	{
-		//moveCamera(forwardVec, cameraSpeed);
-		moveCamera(upVec, cameraSpeed);
+
+		gf -= 5;
+		printf("%f\n", gf);
+		//moveCamera(upVec, cameraSpeed);
+		PPoint3f thiVec(5,0,gf);
+		NodeTransform *translation = new NodeTransform(Translate, thiVec);
+		SG->goToRoot();
+		SG->goToChild(0);
+		SG->goToChild(0);
+		SG->goToChild(0);
+		SG->replaceThisNode(translation);
+
+
 		//xRotation++;
 	} else if (key == 'a')
 	{
 		moveCamera(leftVec, cameraSpeed);
-		zRotation --;
+		zRotation ++;
 	} else if (key == 'r')
 	{
-		//moveCamera(backVec, cameraSpeed);
+		//moveCamera(downVec, cameraSpeed);
 		moveCamera(downVec, cameraSpeed);
 		//xRotation--;
 	} else if (key == 's')
 	{
 		moveCamera(rightVec, cameraSpeed);
-		zRotation ++;
+		zRotation --;
 	}
 
 	lockCamera();
@@ -217,10 +262,11 @@ void special(int key, int x, int y) {
 		zRotation++;
 		break;
 	case GLUT_KEY_UP:
-		xRotation--;
+		//xRotation--;
+		moveCamera(forwardVec, cameraSpeed);
 		break;
 	case GLUT_KEY_DOWN:
-		xRotation++;
+		moveCamera(backVec, cameraSpeed);
 		break;
 	}
 }
@@ -249,7 +295,7 @@ void init()
 	glLoadIdentity();
 
 	/* Set our perspective */
-	gluPerspective(45.0f, ASPECT, 0.1f, 100.0f);
+	gluPerspective(45.0f, ASPECT, 0.1f, 75.0f);
 
 	/* Make sure we're chaning the model view and not the projection */
 	glMatrixMode(GL_MODELVIEW);
@@ -290,7 +336,8 @@ void init()
 
 	SG = new SceneGraph();
 	generateGround();
-	generateRandomBuildings(20);
+	//generateRandomBuildings(20);
+	tmpBuildings(1, 60);
 
 }
 

@@ -80,18 +80,19 @@ void SceneGraph::replaceThisNode(Node *node)
 		printf("Cannot replace this node with a parent node\n");
 	} else
 	{
+		printf("Current node ID = %d and is of type %d\n", currentNode->ID, currentNode->nodeType);
 		/* move children of this node to new node */
 		for (int i = 0; i < currentNode->children->size(); ++i)
 		{
 			node->children->push_back(currentNode->children->at(i));
 		}
-
+	
 		/* Set id of this node to new node */
 		node->ID = currentNode->ID;
 
 		goToParent();
 
-		/* Delete old node */
+		/* Delete old node of parent */
 		if (currentNode->children->size() == 1)
 		{
 			currentNode->children->pop_back();
@@ -109,7 +110,8 @@ void SceneGraph::replaceThisNode(Node *node)
 		}
 
 		/* Push new node in place of old node */
-		currentNode->children->push_back(node);
+		insertChildNodeHere(node);
+		printf("THe parent node NOW NOW has %d child with ID %d\n", currentNode->children->size(), currentNode->children->at(0)->ID);
 	}
 }
 
