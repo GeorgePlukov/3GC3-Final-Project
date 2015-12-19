@@ -23,6 +23,7 @@ const float mouseSensitivity = 0.01;
 
 /* Light Items */
 Light *light1;
+Light *light2;
 
 /* Material Definitions*/
 Material *m1;
@@ -30,6 +31,11 @@ Material *m1;
 /* Scene Graph*/
 #include "SceneGraph/sceneGraph.h"
 SceneGraph *SG;
+
+/* Texture */
+
+GLubyte* snailTex;
+
 
 /* Node ID's */
 int masterID = 0;
@@ -150,7 +156,7 @@ void display()
 	glPushMatrix();
 
 	light1->enable();
-
+	light2->enable();
 	SG->draw();
 	glPopMatrix();
 
@@ -247,6 +253,7 @@ void init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+	glEnable(GL_TEXTURE_2D);
 
 	glShadeModel(GL_SMOOTH);
 	glMatrixMode(GL_PROJECTION);
@@ -265,20 +272,31 @@ void init()
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	// Define our lights
-	Param pos = {0.0f, 1.0f, 80.0f, 1.0f};
+	Param pos = {20.0f, 20.0f, 20.0f, 1.0f};
 	Param spec = {1.0f, 1.0f, 1.0f, 1.0f};
-	Param dif = {0.0f, 0.0f, 0.0f, 1.0f};
+	Param dif = {1.0f, 1.0f, 1.0f, 1.0f};
 	Param amb = {1.0f, 1.0f, 1.0f, 1.0f};
 	light1 = new Light(1, pos, dif, spec, amb);
+	// Define our lights
+	Param pos1 = { -20.0f, 20.0f, -20.0f, 1.0f};
+	Param spec1 = {1.0f, 1.0f, 1.0f, 1.0f};
+	Param dif1 = {1.0f, 1.0f, 1.0f, 1.0f};
+	Param amb1 = {1.0f, 1.0f, 1.0f, 1.0f};
+	light2 = new Light(2, pos1, dif1, spec1, amb1);
 
-	Param ambM = {0.05f, 0.0f, 0.0f, 1.0f};
-	Param difM = {0.5f, 0.4f, 0.4f, 1.0f};
-	Param specM = {0.7f, 0.04f, 0.04f, 1.0f};
-	float reflect = 0.78125f;
+	Param ambM = {1.0f, 1.0f, 1.0f, 1.0f};
+	Param difM = {0.5f, 0.2f, 0.4f, 1.0f};
+	Param specM = {0.7f, 0.04f, 0.14f, 1.0f};
+	float reflect = 78.125f;
 	m1 = new Material(difM, specM, ambM, reflect);
+
 	light1->enable();
+	light2->enable();
 
 	m1->enable();
+	PPMLoader *ppm = new PPMLoader();
+	// LOAD TEXTURE
+	tex = ppm->loadPPM("textures/snail.ppm", &width, &height, &max);
 
 	SG = new SceneGraph();
 	initGraph();
@@ -289,7 +307,7 @@ void printStartMenu()
 {
 	// printf("\033[H\033[J");
 	printf("***********************************\n");
-	printf("****           TITLE            ***\n");
+	printf("****          Nagger            ***\n");
 	printf("***********************************\n");
 	printf("\n");
 

@@ -21,3 +21,4 @@
 
 #include "Material.h"
 #include "Light.h"
+#include "PPMLoader.h"
