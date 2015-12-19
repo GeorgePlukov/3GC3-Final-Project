@@ -35,6 +35,8 @@ SceneGraph *SG;
 /* Texture */
 
 GLubyte* snailTex;
+int width, height, maks;
+GLuint textures[1];
 
 
 /* Node ID's */
@@ -68,9 +70,9 @@ void initGraph() {
 	//MODEL
 	//we will now add a teapot model to the graph as a child of the
 	//transformation node
-	// NodeModel *M1 = new NodeModel(Teapot, m1);
+	NodeModel *M1 = new NodeModel(Teapot, m1);
 	//insert the node into the graph
-	// SG->insertChildNodeHere(M1);
+	SG->insertChildNodeHere(M1);
 
 
 	//THE SAME FLOW CAN BE USED TO DYNAMICALLY ADD NODES
@@ -253,7 +255,10 @@ void init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
+
 	glEnable(GL_TEXTURE_2D);
+	//generate 2 texture IDs, store them in array "textures"
+	glGenTextures(1, textures);
 
 	glShadeModel(GL_SMOOTH);
 	glMatrixMode(GL_PROJECTION);
@@ -296,7 +301,15 @@ void init()
 	m1->enable();
 	PPMLoader *ppm = new PPMLoader();
 	// LOAD TEXTURE
-	tex = ppm->loadPPM("textures/snail.ppm", &width, &height, &max);
+	snailTex = ppm->loadPPM("textures/snail_a.ppm", &width, &height, &maks);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, snailTex);
+
+	
 
 	SG = new SceneGraph();
 	initGraph();
