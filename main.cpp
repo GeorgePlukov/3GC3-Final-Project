@@ -91,13 +91,20 @@ void drawGround()
 	{
 		for (int z = 0; z < size * 2; z++)
 		{
+			glTexCoord2f(0, 0);
 			glNormal3f(0, 1, 0);
 			glVertex3f(x - size / 2, 1.0f, -z + size / 2);
+
 			glNormal3f(0, 1, 0);
+			glTexCoord2f(0, 1);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z + size / 2);
+			
 			glNormal3f(0, 1, 0);
+			glTexCoord2f(1, 1);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z - 1 + size / 2);
+			
 			glNormal3f(0, 1, 0);
+			glTexCoord2f(1, 0);
 			glVertex3f(x - size / 2, 1.0f, -z - 1 + size / 2);
 		}
 	}
@@ -290,8 +297,8 @@ void init()
 	light2 = new Light(2, pos1, dif1, spec1, amb1);
 
 	Param ambM = {1.0f, 1.0f, 1.0f, 1.0f};
-	Param difM = {0.5f, 0.2f, 0.4f, 1.0f};
-	Param specM = {0.7f, 0.04f, 0.14f, 1.0f};
+	Param difM = {1.0f, 1.0f, 1.0f, 1.0f};
+	Param specM = {1.0f, 1.0f, 1.0f, 1.0f};
 	float reflect = 78.125f;
 	m1 = new Material(difM, specM, ambM, reflect);
 
@@ -301,7 +308,7 @@ void init()
 	m1->enable();
 	PPMLoader *ppm = new PPMLoader();
 	// LOAD TEXTURE
-	snailTex = ppm->loadPPM("textures/snail_a.ppm", &width, &height, &maks);
+	snailTex = ppm->loadPPM("textures/wood.ppm", &width, &height, &maks);
 	glBindTexture(GL_TEXTURE_2D, textures[0]);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
@@ -309,7 +316,7 @@ void init()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, snailTex);
 
-	
+
 
 	SG = new SceneGraph();
 	initGraph();
