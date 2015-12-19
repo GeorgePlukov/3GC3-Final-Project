@@ -4,6 +4,16 @@ const int WIDTH = 900;
 const int HEIGHT = 600;
 const float ASPECT = WIDTH / HEIGHT;
 
+enum State {MAIN, GAME, LEADERBOARD};
+State currentState = GAME;
+
+
+// Text for the main screen of the game
+char game[] = { 'G', 'A', 'M', 'E', '\0' };
+char play[] = { '1', '.','P', 'l', 'a', 'y', '\0' };
+char leader[] = { '2', '.', 'L', 'e', 'a', 'd', 'e', 'r', 'b', 'o', 'a', 'r', 'd', '\0' };
+char quit[] = { 'E', 'S', 'C', '.', ' ', 'Q', 'U', 'I', 'T', '\0' };
+
 /* Rotations on the 3 axes */
 float xRotation = 0, yRotation = 0, zRotation = 0;
 
@@ -141,11 +151,71 @@ void display()
 	glRotatef(-yRotation, 0, 1, 0);
 	glRotatef(-zRotation, 0, 0, 1);
 
-	//light1->enable();
+	// Determine what staet should be drawn for the game
+	switch (currentState) {
+	case MAIN:
+		glPushMatrix();
+		glTranslatef(-10.0f, 20.0f, 0.0f);
+		glScalef(0.05f, 0.1f, 0.1f);
 
-	SG->draw();
-	moveCamera(forwardVec, cameraSpeed);
+		// draw title
+		glRasterPos2i(0, 0);
+		for (int i = 0; i < sizeof(game); i++)
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, game[i]);
+		glPopMatrix();
 
+
+		// Game option
+
+
+		///// PLAY
+		glPushMatrix();
+
+		glRasterPos2i(0, 0);
+		glTranslatef(-10.0f, 10.0f, 0.0f);
+		glScalef(0.03f, 0.07f, 0.07f);
+
+
+		for (int i = 0; i < sizeof(play); i++)
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, play[i]);
+		glPopMatrix();
+
+
+		// LEADERBOARD
+		glPushMatrix();
+
+		glRasterPos2i(0, 0);
+		glTranslatef(-10.0f, 0.0f, 0.0f);
+		glScalef(0.03f, 0.07f, 0.07f);
+
+
+		for (int i = 0; i < sizeof(leader); i++)
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, leader[i]);
+		glPopMatrix();
+
+		// ESCAPE
+		glPushMatrix();
+
+		glRasterPos2i(0, 0);
+		glTranslatef(-10.0f, -10.0f, 0.0f);
+		glScalef(0.03f, 0.07f, 0.07f);
+
+
+		for (int i = 0; i < sizeof(quit); i++)
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, quit[i]);
+		glPopMatrix();
+
+
+
+		break;
+	case GAME:
+		SG->draw();
+		moveCamera(forwardVec, cameraSpeed);
+		printf("t\n");
+		break;
+	case LEADERBOARD:
+		break;
+	}
 	glutSwapBuffers();
 
 	glutPostRedisplay();
@@ -169,7 +239,28 @@ void lockCamera()
 		zRotation = 20.0f;
 
 }
+void gameKeyboard(unsigned char key, int x, int y) {
+	if (key == 'w') {
+		moveCamera(upVec, cameraSpeed);
+		//xRotation++;
+	} else if (key == 'a') {
+		moveCamera(leftVec, cameraSpeed);
+		zRotation --;
+	} else if (key == 's') {
+		//moveCamera(backVec, cameraSpeed);
+		moveCamera(downVec, cameraSpeed);
+		//xRotation--;
+	} else if (key == 'd') {
+		moveCamera(rightVec, cameraSpeed);
+		zRotation ++;
+	}
 
+}
+void mainKeyboard(unsigned char key, int x, int y) {
+
+}
+
+void leaderboardKeyboard(unsigned char key, int x, int y) {}
 /* kbd -- the GLUT keyboard function
  *  key -- the key pressed
  *  x and y - mouse x and y coordinates at the time the function is called
@@ -177,29 +268,19 @@ void lockCamera()
 void kbd(unsigned char key, int x, int y)
 {
 	/*Esc to exit the program*/
-	if (key == 27 || key == 'q')
-	{
+	if (key == 27 || key == 'q') {
 		exit(0);
 	}
-
-	else if (key == 'w')
-	{
-		//moveCamera(forwardVec, cameraSpeed);
-		moveCamera(upVec, cameraSpeed);
-		//xRotation++;
-	} else if (key == 'a')
-	{
-		moveCamera(leftVec, cameraSpeed);
-		zRotation --;
-	} else if (key == 'r')
-	{
-		//moveCamera(backVec, cameraSpeed);
-		moveCamera(downVec, cameraSpeed);
-		//xRotation--;
-	} else if (key == 's')
-	{
-		moveCamera(rightVec, cameraSpeed);
-		zRotation ++;
+	switch (currentState) {
+	case MAIN:
+		mainKeyboard(key, x, y);
+		break;
+	case GAME:
+		gameKeyboard(key, x, y);
+		break;
+	case LEADERBOARD:
+		leaderboardKeyboard(key, x, y);
+		break;
 	}
 
 	lockCamera();
@@ -207,22 +288,27 @@ void kbd(unsigned char key, int x, int y)
 
 
 void special(int key, int x, int y) {
-	/* Use the arrow keys to move the selected light source around*/
-	switch (key) {
-	/* Rotate Camera*/
-	case GLUT_KEY_LEFT:
-		zRotation--;
-		break;
-	case GLUT_KEY_RIGHT:
-		zRotation++;
-		break;
-	case GLUT_KEY_UP:
-		xRotation--;
-		break;
-	case GLUT_KEY_DOWN:
-		xRotation++;
+	switch (currentState) {
+	case GAME:
+		/* Use the arrow keys to move the selected light source around*/
+		switch (key) {
+		/* Rotate Camera*/
+		case GLUT_KEY_LEFT:
+			zRotation--;
+			break;
+		case GLUT_KEY_RIGHT:
+			zRotation++;
+			break;
+		case GLUT_KEY_UP:
+			xRotation--;
+			break;
+		case GLUT_KEY_DOWN:
+			xRotation++;
+			break;
+		}
 		break;
 	}
+	glutPostRedisplay();
 }
 
 void registerCallbacks()
@@ -273,7 +359,7 @@ void init()
 	Param specM = {0.7f, 0.04f, 0.04f, 1.0f};
 	float reflect = 0.78125f;
 	m1 = new Material(difM, specM, ambM, reflect);
-	
+
 	light1->enable();
 	//m1->enable();
 	// Create an instance of ppm loader
