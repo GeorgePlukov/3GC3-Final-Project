@@ -1,17 +1,19 @@
 #include "nodeModel.h"
 #include "../includes.h"
 
-NodeModel::NodeModel(ModelType whatType)
+NodeModel::NodeModel(ModelType whatType, GLuint t)
 {
 	nodeType = model;
 	modelType = whatType;
+	tex = t;
 	this->m = NULL;
 	isDrawable = true;
 }
 
-NodeModel::NodeModel(ModelType whatType, Material *m)
+NodeModel::NodeModel(ModelType whatType, Material *m, GLuint t)
 {
 	nodeType = model;
+	tex = t;
 	modelType = whatType;
 	this->m = m;
 	isDrawable = true;
@@ -23,7 +25,7 @@ NodeModel::NodeModel(ModelType whatType, Material *m)
 //which in this case means drawing the model
 void NodeModel::nodeSpecificCodeDown()
 {
-
+	glBindTexture(GL_TEXTURE_2D, tex);
 	switch (modelType) {
 	case Helicopter:
 		//TODO
@@ -40,7 +42,6 @@ void NodeModel::nodeSpecificCodeDown()
 	}
 }
 void NodeModel::georgeSolidCube() {
-	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
 	glBegin(GL_QUADS);
 
@@ -151,7 +152,6 @@ void NodeModel::georgeSolidCube() {
 
 void NodeModel::drawGround()
 {
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
 
 	int size = 300;
 	glColor3f(0.0f, 1.0f, 0.0f);

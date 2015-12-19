@@ -15,10 +15,11 @@ enum ModelType
 class NodeModel:public Node
 {
 public:
-	NodeModel(ModelType whatType);
-	NodeModel(ModelType whatType, Material *m);
-	Material *m;
+	NodeModel(ModelType whatType, GLuint t);
+	NodeModel(ModelType whatType, Material *m, GLuint t);
 	ModelType modelType;
+	Material *m;
+	GLuint tex;
 
 	virtual void nodeSpecificCodeDown();
 
