@@ -34,9 +34,9 @@ Material *m1;
 #include "SceneGraph/sceneGraph.h"
 SceneGraph *SG;
 /* Texture */
-GLubyte* woodTex, legoSideTex, legoTopTex;
+GLubyte* woodTex, *legoSideTex, *legoTopTex;
 int width, height, maks;
-GLuint textures[1];
+GLuint textures[5];
 
 /* Node ID's */
 int masterID = 0;
@@ -242,7 +242,7 @@ void init()
 
 	glEnable(GL_TEXTURE_2D);
 	//generate 2 texture IDs, store them in array "textures"
-	glGenTextures(1, textures);
+	glGenTextures(5, textures);
 
 	glShadeModel(GL_SMOOTH);
 	glMatrixMode(GL_PROJECTION);
@@ -288,13 +288,13 @@ void init()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, woodTex);
 
 	// LOAD TEXTURE
-	legoTex = ppm->loadPPM("textures/wood2.ppm", &width, &height, &maks);
-	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	legoSideTex = ppm->loadPPM("textures/lego.ppm", &width, &height, &maks);
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, woodTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, legoSideTex);
 
 	SG = new SceneGraph();
 	generateGround();

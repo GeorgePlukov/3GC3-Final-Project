@@ -40,6 +40,7 @@ void NodeModel::nodeSpecificCodeDown()
 	}
 }
 void NodeModel::georgeSolidCube() {
+	glBindTexture(GL_TEXTURE_2D, textures[1]);
 
 	glBegin(GL_QUADS);
 
@@ -150,6 +151,8 @@ void NodeModel::georgeSolidCube() {
 
 void NodeModel::drawGround()
 {
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+
 	int size = 300;
 	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_QUADS);
