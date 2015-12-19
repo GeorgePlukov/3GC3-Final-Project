@@ -1,11 +1,15 @@
+#include "PPMLoader.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 
 GLubyte *image;
 
-
-GLubyte* ppmloader::LoadPPM(char* file, int* width, int* height, int* max)
+PPMLoader::PPMLoader()
+{
+	
+}
+GLubyte* PPMLoader::loadPPM(char* file, int* width, int* height, int* max)
 {
 	GLubyte* img;
 	FILE *fd;
@@ -44,7 +48,7 @@ GLubyte* ppmloader::LoadPPM(char* file, int* width, int* height, int* max)
 
 	/* calculate number of pixels and allocate storage for this */
 	nm = n*m;
-	img = malloc(3*sizeof(GLuint)*nm);
+	img = (GLubyte*)malloc(3*sizeof(GLuint)*nm);
 	s=255.0/k;
 
 	/* for every pixel, grab the read green and blue values, storing them in the image data array */
