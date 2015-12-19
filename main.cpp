@@ -9,11 +9,11 @@ float xRotation = 0, yRotation = 0, zRotation = 0;
 
 /* The 6 direction vectors */
 PVector3f forwardVec(0, 0, -1);
-PVector3f back = -forwardVec;
-PVector3f up(0, 1, 0);
-PVector3f down = -up;
-PVector3f left = up * forwardVec;
-PVector3f right = -left;
+PVector3f backVec = -forwardVec;
+PVector3f upVec(0, 1, 0);
+PVector3f downVec = -upVec;
+PVector3f leftVec = upVec * forwardVec;
+PVector3f rightVec = -leftVec;
 
 /* Camera Vector for translations */
 PVector3f cam(0.0f, 7.0f, 75.0f);
@@ -37,64 +37,43 @@ int getID() {
 	return masterID++;
 }
 
-/***************************************************************************************/
-
-//function which will populate a sample graph
 void initGraph() {
-	//temporary place which holds out values
-	PPoint3f tmpPoint3f;
+	NodeGroup *group;
+	NodeTransform *rotation, *scale, *translation;
+	NodeModel *model;
 
+	/*Initially, draw ground*/
+	vector<ModelType> models;
+	models.push_back(Ground);
 
-	//TRANSFORMATION
-	//a tranlation transformation node
-	//how much translation
-	tmpPoint3f.x = 5.0f;
-	tmpPoint3f.y = 3.0f;
-	tmpPoint3f.z = -10.0f;
-	//add the node as a child of root node
-	NodeTransform *T1 = new NodeTransform(Translate, tmpPoint3f);
-	//insert the node into the graph
-	SG->insertChildNodeHere(T1);
-	//go to the child node
-	SG->goToChild(0);
-
-
-	//MODEL
-	//we will now add a teapot model to the graph as a child of the
-	//transformation node
-	// NodeModel *M1 = new NodeModel(Teapot, m1);
-	//insert the node into the graph
-	// SG->insertChildNodeHere(M1);
-
-
-	//THE SAME FLOW CAN BE USED TO DYNAMICALLY ADD NODES
-	//DURING RUNTIME
-}
-
-
-/***************************************************************************************/
-
-void drawGround()
-{
-	int size = 300;
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glBegin(GL_QUADS);
-	for (int x = 0; x < size; x++)
+	for (int i = 0; i < models.size(); i++)
 	{
-		for (int z = 0; z < size * 2; z++)
-		{
-			glNormal3f(0, 1, 0);
-			glVertex3f(x - size / 2, 1.0f, -z + size / 2);
-			glNormal3f(0, 1, 0);
-			glVertex3f(x + 1 - size / 2, 1.0f, -z + size / 2);
-			glNormal3f(0, 1, 0);
-			glVertex3f(x + 1 - size / 2, 1.0f, -z - 1 + size / 2);
-			glNormal3f(0, 1, 0);
-			glVertex3f(x - size / 2, 1.0f, -z - 1 + size / 2);
-		}
-	}
-	glEnd();
 
+		group = new NodeGroup();
+		SG->insertChildNodeHere(group);
+		SG->goToChild(i);
+
+		/*Apply rotation to each model*/
+		rotation = new NodeTransform(Rotate);
+		SG->insertChildNodeHere(rotation);
+		SG->goToChild(0);
+
+		/* Apply scaling to each model*/
+		scale = new NodeTransform(Scale);
+		SG->insertChildNodeHere(scale);
+		SG->goToChild(0);
+
+		/* Apply translation to each model*/
+		translation = new NodeTransform(Translate);
+		SG->insertChildNodeHere(translation);
+		SG->goToChild(0);
+
+		/* Draw each model */
+		model = new NodeModel(models[i]);
+		SG->insertChildNodeHere(model);
+
+		SG->goToRoot();
+	}
 }
 
 void drawCubes()
@@ -138,21 +117,11 @@ void display()
 	glRotatef(-yRotation, 0, 1, 0);
 	glRotatef(-zRotation, 0, 0, 1);
 
-
-	glPushMatrix();
-
-	drawGround();
-	drawCubes();
-	// moveCamera(forwardVec, cameraSpeed);
-
-	glPopMatrix();
-
-	glPushMatrix();
-
-	light1->enable();
+	//light1->enable();
 
 	SG->draw();
-	glPopMatrix();
+	drawCubes();
+	// moveCamera(forwardVec, cameraSpeed);
 
 	glutSwapBuffers();
 
@@ -192,19 +161,21 @@ void kbd(unsigned char key, int x, int y)
 
 	else if (key == 'w')
 	{
-		moveCamera(up, cameraSpeed);
+		moveCamera(forwardVec, cameraSpeed);
+		//moveCamera(upVec, cameraSpeed);
 		//xRotation++;
 	} else if (key == 'a')
 	{
-		moveCamera(left, cameraSpeed);
+		moveCamera(leftVec, cameraSpeed);
 		zRotation --;
 	} else if (key == 'r')
 	{
-		moveCamera(down, cameraSpeed);
+		moveCamera(backVec, cameraSpeed);
+		//moveCamera(downVec, cameraSpeed);
 		//xRotation--;
 	} else if (key == 's')
 	{
-		moveCamera(right, cameraSpeed);
+		moveCamera(rightVec, cameraSpeed);
 		zRotation ++;
 	}
 
@@ -229,8 +200,6 @@ void special(int key, int x, int y) {
 		xRotation++;
 		break;
 	}
-
-	printf("Rotation: (%f, %f, %f)\n", xRotation, yRotation, zRotation);
 }
 
 void registerCallbacks()
@@ -262,13 +231,14 @@ void init()
 	glLoadIdentity();
 
 	/* Colour of the background */
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	glClearColor(0.0f, 0.75f, 1.0f, 1.0f);
 
-	// Define our lights
-	Param pos = {0.0f, 1.0f, 80.0f, 1.0f};
-	Param spec = {1.0f, 1.0f, 1.0f, 1.0f};
-	Param dif = {0.0f, 0.0f, 0.0f, 1.0f};
-	Param amb = {1.0f, 1.0f, 1.0f, 1.0f};
+	//Define our lights
+	Param pos = {0.0f, 7.0f, 80.0f, 0.0f};
+	Param spec = {0.9f, 0.9f, 0.9f, 1.0f};
+	Param dif = {0.5f, 0.5f, 0.5f, 1.0f};
+	Param amb = {0.1f, 0.2f, 0.1f, 1.0f};
+
 	light1 = new Light(1, pos, dif, spec, amb);
 
 	Param ambM = {0.05f, 0.0f, 0.0f, 1.0f};
@@ -276,8 +246,8 @@ void init()
 	Param specM = {0.7f, 0.04f, 0.04f, 1.0f};
 	float reflect = 0.78125f;
 	m1 = new Material(difM, specM, ambM, reflect);
+	
 	light1->enable();
-
 	m1->enable();
 
 	SG = new SceneGraph();
@@ -314,7 +284,7 @@ int main(int argc, char** argv)
 	init();
 
 	registerCallbacks();
-	printStartMenu();
+	//printStartMenu();
 
 	//start the program!
 	glutMainLoop();

@@ -6,20 +6,24 @@
 
 enum ModelType
 {
-	Sphere,
-	Cube,
-	Teapot,
-	Custom
+	Helicopter,
+	Ground,
+	Wall,
+	Target
 };
 
 class NodeModel:public Node
 {
 public:
-	NodeModel(ModelType whatType, Material *m);	//constructor
+	NodeModel(ModelType whatType);
+	NodeModel(ModelType whatType, Material *m);
 	Material *m;
 	ModelType modelType;
 
 	virtual void nodeSpecificCodeDown();
+
+private:
+	void drawGround();
 };
 
 #endif

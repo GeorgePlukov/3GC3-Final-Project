@@ -4,7 +4,7 @@
 #include "node.h"
 #include "../PMath/PPoint.h"
 
-enum transformType
+enum TransformType
 {
 	Translate,
 	Rotate,
@@ -14,10 +14,11 @@ enum transformType
 class NodeTransform:public Node
 {
 public:
-	NodeTransform(transformType whatType, PPoint3f point3f);
-	NodeTransform(transformType whatType, PPoint4f point4f);
+	NodeTransform(TransformType whatType, PPoint3f point3f);
+	NodeTransform(TransformType whatType, PPoint4f point4f);
+	NodeTransform(TransformType whatType);
 
-	transformType transformationType;
+	TransformType transformationType;
 	PPoint3f amount3;
 	PPoint4f amount4;
 
