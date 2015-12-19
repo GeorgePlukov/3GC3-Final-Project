@@ -24,6 +24,8 @@ public:
 
 private:
 	void drawGround();
+	void georgeSolidCube();
+
 };
 
 #endif

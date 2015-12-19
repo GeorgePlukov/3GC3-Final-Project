@@ -32,12 +32,120 @@ void NodeModel::nodeSpecificCodeDown()
 		drawGround();
 		break;
 	case Building:
-		glutSolidCube(1);
+		georgeSolidCube();
 		break;
 	case Target:
 		//TODO
 		break;
 	}
+}
+void NodeModel::georgeSolidCube() {
+
+	glBegin(GL_QUADS);
+
+	//front
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, -1, 1);
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(0, 0);
+	glVertex3f(1, -1, 1);
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, 1, 1);
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(1, 1);
+	glVertex3f(-1, 1, 1);
+
+	//top
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, 1, 1);
+
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(1, 1, 1);
+
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, 1, -1);
+
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(-1, 1, -1);
+
+	//bottom
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, -1, 1);
+
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(1, -1, 1);
+
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, -1, -1);
+
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(-1, -1, -1);
+
+	//left side
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, 1, 1);
+
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(-1, -1, 1);
+
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(-1, -1, -1);
+
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(-1, 1, -1);
+
+	//right side
+	glNormal3f(1, 0, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(1, 1, 1);
+
+	glNormal3f(1, 0, 0);
+	glVertex3f(1, -1, 1);
+
+	glNormal3f(1, 0, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, -1, -1);
+
+	glNormal3f(1, 0, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(1, 1, -1);
+
+	//back side
+
+	glNormal3f(0, 0, -1);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, 1, -1);
+
+	glNormal3f(0, 0, -1);
+	glVertex3f(-1, -1, -1);
+
+	glNormal3f(0, 0, -1);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, -1, -1);
+
+	glNormal3f(0, 0, -1);
+	glTexCoord2f(1, 1);
+	glVertex3f(1, 1, -1);
+
+	glEnd();
 }
 
 void NodeModel::drawGround()

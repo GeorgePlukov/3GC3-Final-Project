@@ -19,7 +19,7 @@ PVector3f leftVec = upVec * forwardVec;
 PVector3f rightVec = -leftVec;
 
 /* Camera Vector for translations */
-PVector3f cam(0.0f, 2.0f, 75.0f);
+PVector3f cam(0.0f, 12.0f, 75.0f);
 
 const float cameraSpeed = 0.5f;
 const float mouseSensitivity = 0.01;
@@ -34,7 +34,7 @@ Material *m1;
 #include "SceneGraph/sceneGraph.h"
 SceneGraph *SG;
 /* Texture */
-GLubyte* woodTex;
+GLubyte* woodTex, legoSideTex, legoTopTex;
 int width, height, maks;
 GLuint textures[1];
 
@@ -287,6 +287,14 @@ void init()
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, woodTex);
 
+	// LOAD TEXTURE
+	legoTex = ppm->loadPPM("textures/wood2.ppm", &width, &height, &maks);
+	glBindTexture(GL_TEXTURE_2D, textures[0]);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, woodTex);
 
 	SG = new SceneGraph();
 	generateGround();
