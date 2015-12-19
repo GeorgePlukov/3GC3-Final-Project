@@ -113,6 +113,15 @@ void SceneGraph::replaceThisNode(Node *node)
 	}
 }
 
+void SceneGraph::deleteBuildings()
+{
+	goToRoot();
+	if (currentNode->children->size() > 1)
+	{
+		currentNode->children->erase(currentNode->children->begin()+1, currentNode->children->end());
+	}
+}
+
 //draw the scenegraph
 void SceneGraph::draw()
 {

@@ -44,11 +44,10 @@ int getID() {
 	return masterID++;
 }
 
-void initGraph() {
+void generateGround() {
 	NodeGroup *group;
 	NodeTransform *rotation, *scale, *translation;
 	NodeModel *model;
-
 	/*Initially, draw ground*/
 	group = new NodeGroup();
 	SG->insertChildNodeHere(group);
@@ -74,11 +73,19 @@ void initGraph() {
 	SG->insertChildNodeHere(model);
 
 	SG->goToRoot();
+}
 
+void generateRandomBuildings(int numOfBuildings)
+{
+	NodeGroup *group;
+	NodeTransform *rotation, *scale, *translation;
+	NodeModel *model;
+
+	/* Delete current buildings... If there are no current buildings, delete will just return */
+	SG->deleteBuildings();
 	/* Add 10 buildings for now */
-	for (int i = 1; i < 31; i++)
+	for (int i = 1; i <= numOfBuildings; i++)
 	{
-
 		group = new NodeGroup();
 		SG->insertChildNodeHere(group);
 		SG->goToChild(i);
@@ -106,27 +113,14 @@ void initGraph() {
 	}
 }
 
-void drawCubes()
-{
-	glColor3f(1.0f, 0.0f, 0.0f);
-	for (int i = 0; i < 150; i += 10)
-	{
-		glPushMatrix();
-		float z = 70.0f - (float)i;
-		glTranslatef(5.0f, 2.0f, z);
-		glutSolidCube(1);
-		glPopMatrix();
-	}
-
-}
-
 /* Moves camera positions along a vector*/
 void moveCamera(PVector3f v, float amt)
 {
 	cam = cam + (v * amt);
-	if (cam.z < -5.0f)
+	if (cam.z < -10.0f)
 	{
 		cam.z = 75.0f;
+		generateRandomBuildings(20);
 	}
 }
 
@@ -150,7 +144,6 @@ void display()
 	//light1->enable();
 
 	SG->draw();
-	//drawCubes();
 	moveCamera(forwardVec, cameraSpeed);
 
 	glutSwapBuffers();
@@ -267,7 +260,7 @@ void init()
 	/* Colour of the background */
 	glClearColor(0.0f, 0.75f, 1.0f, 1.0f);
 
-	//Define our lights
+	/* Define our lights */
 	Param pos = {0.0f, 7.0f, 80.0f, 0.0f};
 	Param spec = {0.9f, 0.9f, 0.9f, 1.0f};
 	Param dif = {0.5f, 0.5f, 0.5f, 1.0f};
@@ -296,7 +289,8 @@ void init()
 
 
 	SG = new SceneGraph();
-	initGraph();
+	generateGround();
+	generateRandomBuildings(20);
 
 }
 

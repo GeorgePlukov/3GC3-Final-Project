@@ -1,8 +1,7 @@
 #ifndef __STARFOXUTILS_H__
 #define __STARFOXUTILS_H__ 
 
-#include "PMath/PPoint.h"
-#include <cstdlib>
+#include "includes.h"
 #include <ctime>
 
 class StarfoxUtils

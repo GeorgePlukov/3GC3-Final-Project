@@ -19,6 +19,7 @@ public:
 	void insertChildNodeHere(Node *node);
 	void deleteThisNode();
 	void replaceThisNode(Node *node);
+	void deleteBuildings();
 	//Scene Graph Draw
 	void draw();
 
