@@ -12,7 +12,9 @@ State currentState = MAIN;
 char game[] = { 'G', 'A', 'M', 'E', '\0' };
 char play[] = { '1', '.', 'P', 'l', 'a', 'y', '\0' };
 char leader[] = { '2', '.', 'L', 'e', 'a', 'd', 'e', 'r', 'b', 'o', 'a', 'r', 'd', '\0' };
-char quit[] = { 'E', 'S', 'C', '.', ' ', 'Q', 'U', 'I', 'T', '\0' };
+char quit[] = { 'E', 'S', 'C', '.', ' ', 'Q', 'u', 'i', 't', '\0' };
+char leaderboardTitle[] = "LeaderBoard\0";
+char name[] = { 'a', 'a', 'a', '\0' };
 
 /* Rotations on the 3 axes */
 float xRotation = 0, yRotation = 0, zRotation = 0;
@@ -48,6 +50,10 @@ GLubyte* woodTex, *legoSideTex, *legoTopTex;
 int width, height, maks;
 GLuint textures[5];
 
+/* Scoreboard */
+int currentScore = 0;
+int * highScore[3];
+string * hignNames[3];
 /* Node ID's */
 int masterID = 0;
 int getID() {
@@ -133,7 +139,13 @@ void moveCamera(PVector3f v, float amt)
 		generateRandomBuildings(20);
 	}
 }
-
+void recordScore(char name [] , int score){
+	for (int s = 0; s < 3; s++){
+		if (score > highScore[s]){
+			
+		}
+	}
+}
 /*
 	Sets up the camera, lighting and materials,
 	then calls the draw function
@@ -160,14 +172,13 @@ void display()
 
 		// draw title
 		glRasterPos2i(0, 0);
+		glDisable(GL_LIGHTING);
+		glColor3f(0.8, 0.2, 0.3);
 		for (int i = 0; i < sizeof(game); i++)
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, game[i]);
 		glPopMatrix();
 
-
 		// Game option
-
-
 		///// PLAY
 		glPushMatrix();
 
@@ -197,7 +208,7 @@ void display()
 		glPushMatrix();
 
 		glRasterPos2i(0, 0);
-		glTranslatef(-10.0f, -10.0f, 0.0f);
+		glTranslatef(-10.0f,  -10.0f, 0.0f);
 		glScalef(0.03f, 0.07f, 0.07f);
 
 
@@ -205,15 +216,34 @@ void display()
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, quit[i]);
 		glPopMatrix();
 
-
+		glEnable(GL_LIGHTING);
 
 		break;
 	case GAME:
+		currentScore += 1;
 		SG->draw();
 		moveCamera(forwardVec, cameraSpeed);
-		printf("t\n");
+		char buff [50];
+		int buffLength;
+
+		buffLength = sprintf(buff, "Score, harr: %d", currentScore);
+		// when the game ends make a call to record the score
+		recordScore(name, currentScore);
+
 		break;
 	case LEADERBOARD:
+		glPushMatrix();
+		glTranslatef(-18.0f, 20.0f, 0.0f);
+		glScalef(0.05f, 0.1f, 0.1f);
+
+		// draw title
+		glRasterPos2i(0, 0);
+		glDisable(GL_LIGHTING);
+		glColor3f(0.8, 0.2, 0.3);
+		for (int i = 0; i < sizeof(leaderboardTitle); i++)
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle[i]);
+		glPopMatrix();
+
 		break;
 	}
 	glutSwapBuffers();
@@ -264,10 +294,16 @@ void mainKeyboard(unsigned char key, int x, int y) {
 	}
 }
 
-void leaderboardKeyboard(unsigned char key, int x, int y) {}
+void leaderboardKeyboard(unsigned char key, int x, int y) {
+	if (key == 'b') {
+		currentState = MAIN;
+	}
+}
+
+
 /* kbd -- the GLUT keyboard function
- *  key -- the key pressed
- *  x and y - mouse x and y coordinates at the time the function is called
+ * key -- the key pressed
+ * x and y - mouse x and y coordinates at the time the function is called
  */
 void kbd(unsigned char key, int x, int y)
 {
