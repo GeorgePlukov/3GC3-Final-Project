@@ -7,7 +7,7 @@ const float ASPECT = WIDTH / HEIGHT;
 enum State {MAIN, GAME, LEADERBOARD};
 State currentState = MAIN;
 
-
+bool paused = false;
 // Text for the main screen of the game
 
 string game = "Game";
@@ -236,36 +236,37 @@ void display()
 		glEnable(GL_LIGHTING);
 		break;
 	case GAME:
+		if (!paused) {
+			if (countScore) {
+				currentScore += 1;
+				countScore = false;
+			}
+			if (scorecounter % 10 == 0) {
+				countScore = true;
+			}
+			scorecounter++;
 
-		if (countScore) {
-			currentScore += 1;
-			countScore = false;
-		}
-		if (scorecounter % 10 == 0) {
-			countScore = true;
-		}
-		scorecounter++;
+			if (upMove) {
+				moveCamera(upVec, cameraSpeed);
+			}
+			if (leftMove) {
+				moveCamera(leftVec, cameraSpeed);
+				zRotation ++;
+			}
+			if (downMove) {
+				moveCamera(downVec, cameraSpeed);
+			}
+			if (rightMove) {
+				moveCamera(rightVec, cameraSpeed);
+				zRotation--;
+			}
+			lockCamera();
 
-		if (upMove) {
-			moveCamera(upVec, cameraSpeed);
-		}
-		if (leftMove) {
-			moveCamera(leftVec, cameraSpeed);
-			zRotation ++;
-		}
-		if (downMove) {
-			moveCamera(downVec, cameraSpeed);
-		}
-		if (rightMove) {
-			moveCamera(rightVec, cameraSpeed);
-			zRotation--;
-		}
-		lockCamera();
+			SG->moveAllBuildingsForward();
+			checkForCrash();
 
-		SG->draw();
-		SG->moveAllBuildingsForward();
-		checkForCrash();
-
+		}
+			SG->draw();
 
 		// THis next part is used to display the current score while the game is active
 		glMatrixMode(GL_PROJECTION);
@@ -407,6 +408,8 @@ void gameKeyboard(unsigned char key, int x, int y) {
 
 	} else if (key == 'd') {
 		rightMove = true;
+	} else if (key == 'p'){
+		paused = !paused;
 	}
 }
 void mainKeyboard(unsigned char key, int x, int y) {
