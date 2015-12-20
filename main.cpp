@@ -9,10 +9,10 @@ State currentState = MAIN;
 
 
 // Text for the main screen of the game
-char game[] = { 'G', 'A', 'M', 'E', '\0' };
-char play[] = { '1', '.', 'P', 'l', 'a', 'y', '\0' };
-char leader[] = { '2', '.', 'L', 'e', 'a', 'd', 'e', 'r', 'b', 'o', 'a', 'r', 'd', '\0' };
-char quit[] = { 'E', 'S', 'C', '.', ' ', 'Q', 'u', 'i', 't', '\0' };
+
+string game = "Game";
+
+string menu [3] = {"1. Play", "2. Leaderboard", "ESC. Quit"};
 string leaderboardTitle = "LeaderBoard";
 string goBack = "Press b to go back";
 
@@ -63,18 +63,14 @@ int getID() {
 	return masterID++;
 }
 
-void generateGround() {
+void generateGround()
+{
 	NodeGroup *group;
 	NodeTransform *rotation, *scale, *translation;
 	NodeModel *model;
 	/*Initially, draw ground*/
 	group = new NodeGroup();
 	SG->insertChildNodeHere(group);
-	SG->goToChild(0);
-
-	/*Apply rotation to ground*/
-	rotation = new NodeTransform(Rotate);
-	SG->insertChildNodeHere(rotation);
 	SG->goToChild(0);
 
 	/* Apply scaling to ground*/
@@ -100,19 +96,12 @@ void generateRandomBuildings(int numOfBuildings)
 	NodeTransform *rotation, *scale, *translation;
 	NodeModel *model;
 
-	/* Delete current buildings... If there are no current buildings, delete will just return */
-	SG->deleteBuildings();
 	/* Add 10 buildings for now */
 	for (int i = 1; i <= numOfBuildings; i++)
 	{
 		group = new NodeGroup();
 		SG->insertChildNodeHere(group);
 		SG->goToChild(i);
-
-		/*Apply rotation to each model*/
-		rotation = new NodeTransform(Rotate);
-		SG->insertChildNodeHere(rotation);
-		SG->goToChild(0);
 
 		/* Apply scaling to each model*/
 		scale = new NodeTransform(Scale, utils.getRandomBuildingScaling());
@@ -136,11 +125,11 @@ void generateRandomBuildings(int numOfBuildings)
 void moveCamera(PVector3f v, float amt)
 {
 	cam = cam + (v * amt);
-	if (cam.z < -10.0f)
-	{
-		cam.z = 75.0f;
-		generateRandomBuildings(20);
-	}
+}
+
+void checkForCrash()
+{
+
 }
 // void recordScore(string name , int score) {
 // 	for (int s = 0; s < 3; s++) {
@@ -183,59 +172,46 @@ void display()
 	// Determine what state should be drawn for the game
 	switch (currentState) {
 	case MAIN:
-		glPushMatrix();
-		glTranslatef(-10.0f, 20.0f, 0.0f);
-		glScalef(0.05f, 0.1f, 0.1f);
 
-		// draw title
-		glRasterPos2i(0, 0);
+		/********** ALL DRAWING FOR SCOREBOARD **************/
+
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		// glRasterPos2i(100, 100);
+		glPushMatrix();
 		glDisable(GL_LIGHTING);
 		glColor3f(0.8, 0.2, 0.3);
-		for (int i = 0; i < sizeof(game); i++) {
-			glutStrokeCharacter(GLUT_STROKE_ROMAN, game[i]);
-			glutStrokeCharacter(GLUT_STROKE_ROMAN, game[i]);
+
+		glTranslatef(WIDTH / 2 - 200, HEIGHT / 2 + 200, 0);
+		glScalef(0.4f, 0.4f, 0.0f);
+		/********** Leaderboard title **************/
+		for (int i = 0; i < game.size(); i++)
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, game.at(i));
+		glPopMatrix();
+
+		/*********** Player names and scores *************/
+
+		for (int s = 0; s < 3; s++) {
+			glPushMatrix();
+			glTranslatef(WIDTH / 2 - 200, HEIGHT / 2 - ((s + 1) * 100) + 200, 0);
+			glScalef(0.4f, 0.4f, 0.0f);
+
+			for (int i = 0; i < menu[s].size(); i++) {
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, menu[s].at(i));
+			}
+			glPopMatrix();
 		}
+
+		// Return our view state back to what it needs to be for 3d drawing
 		glPopMatrix();
-
-		// Game option
-		///// PLAY
-		glPushMatrix();
-
-		glRasterPos2i(0, 0);
-		glTranslatef(-10.0f, 10.0f, 0.0f);
-		glScalef(0.03f, 0.07f, 0.07f);
-
-
-		for (int i = 0; i < sizeof(play); i++)
-			glutStrokeCharacter(GLUT_STROKE_ROMAN, play[i]);
+		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
-
-
-		// LEADERBOARD
-		glPushMatrix();
-
-		glRasterPos2i(0, 0);
-		glTranslatef(-10.0f, 0.0f, 0.0f);
-		glScalef(0.03f, 0.07f, 0.07f);
-
-
-		for (int i = 0; i < sizeof(leader); i++)
-			glutStrokeCharacter(GLUT_STROKE_ROMAN, leader[i]);
-		glPopMatrix();
-
-		glPushMatrix();
-
-		glRasterPos2i(0, 0);
-		glTranslatef(-10.0f,  -10.0f, 0.0f);
-		glScalef(0.03f, 0.07f, 0.07f);
-
-
-		for (int i = 0; i < sizeof(quit); i++)
-			glutStrokeCharacter(GLUT_STROKE_ROMAN, quit[i]);
-		glPopMatrix();
-
 		glEnable(GL_LIGHTING);
-
 		break;
 	case GAME:
 
@@ -247,11 +223,11 @@ void display()
 			countScore = true;
 		}
 		scorecounter++;
-		printf("%d\n", countScore);
 
 		SG->draw();
-		moveCamera(forwardVec, cameraSpeed);
-		char buff [50];
+		SG->moveAllBuildingsForward();
+		checkForCrash();
+
 
 		// THis next part is used to display the current score while the game is active
 		glMatrixMode(GL_PROJECTION);
@@ -337,7 +313,7 @@ void display()
 		glTranslatef(WIDTH / 2 - 250, 100, 0);
 		glScalef(0.4f, 0.4f, 0.0f);
 		for (int i = 0; i < goBack.size(); i++) {
-				glutStrokeCharacter(GLUT_STROKE_ROMAN, goBack.at(i));
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, goBack.at(i));
 
 		}
 		glPopMatrix();
@@ -374,19 +350,21 @@ void lockCamera()
 
 }
 void gameKeyboard(unsigned char key, int x, int y) {
-	if (key == 'w') {
+
+	if (key == 'w')
+	{
 		moveCamera(upVec, cameraSpeed);
+		// SG->getAllBuildingLocations();
 		//xRotation++;
 	} else if (key == 'a') {
 		moveCamera(leftVec, cameraSpeed);
 		zRotation --;
 	} else if (key == 's') {
-		//moveCamera(backVec, cameraSpeed);
-		moveCamera(downVec, cameraSpeed);
-		//xRotation--;
+		moveCamera(backVec, cameraSpeed);
+
 	} else if (key == 'd') {
 		moveCamera(rightVec, cameraSpeed);
-		zRotation ++;
+		zRotation--;
 	}
 
 }
@@ -403,8 +381,6 @@ void leaderboardKeyboard(unsigned char key, int x, int y) {
 		currentState = MAIN;
 	}
 }
-
-
 /* kbd -- the GLUT keyboard function
  * key -- the key pressed
  * x and y - mouse x and y coordinates at the time the function is called
@@ -479,7 +455,7 @@ void init()
 	glLoadIdentity();
 
 	/* Set our perspective */
-	gluPerspective(45.0f, ASPECT, 0.1f, 100.0f);
+	gluPerspective(45.0f, ASPECT, 0.1f, 75.0f);
 
 	/* Make sure we're chaning the model view and not the projection */
 	glMatrixMode(GL_MODELVIEW);
@@ -529,12 +505,11 @@ void init()
 	SG = new SceneGraph();
 	generateGround();
 	generateRandomBuildings(20);
-
 }
 
 void printStartMenu()
 {
-	// printf("\033[H\033[J");
+	printf("\033[H\033[J");
 	printf("***********************************\n");
 	printf("****           TITLE            ***\n");
 	printf("***********************************\n");
