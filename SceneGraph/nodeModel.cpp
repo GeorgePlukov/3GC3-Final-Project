@@ -1,17 +1,19 @@
 #include "nodeModel.h"
-#include "../includes.h" 
+#include "../includes.h"
 
-NodeModel::NodeModel(ModelType whatType)
+NodeModel::NodeModel(ModelType whatType, GLuint t)
 {
 	nodeType = model;
 	modelType = whatType;
+	tex = t;
 	this->m = NULL;
 	isDrawable = true;
 }
 
-NodeModel::NodeModel(ModelType whatType, Material *m)
+NodeModel::NodeModel(ModelType whatType, Material *m, GLuint t)
 {
 	nodeType = model;
+	tex = t;
 	modelType = whatType;
 	this->m = m;
 	isDrawable = true;
@@ -23,8 +25,8 @@ NodeModel::NodeModel(ModelType whatType, Material *m)
 //which in this case means drawing the model
 void NodeModel::nodeSpecificCodeDown()
 {
-		
-	switch (modelType){
+	glBindTexture(GL_TEXTURE_2D, tex);
+	switch (modelType) {
 	case Helicopter:
 		//TODO
 		break;
@@ -32,16 +34,125 @@ void NodeModel::nodeSpecificCodeDown()
 		drawGround();
 		break;
 	case Building:
-		glutSolidCube(1);
+		georgeSolidCube();
 		break;
 	case Target:
 		//TODO
 		break;
 	}
 }
+void NodeModel::georgeSolidCube() {
+
+	glBegin(GL_QUADS);
+
+	//front
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, -1, 1);
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(0, 0);
+	glVertex3f(1, -1, 1);
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, 1, 1);
+
+	glNormal3f(0, 0, 1);
+	glTexCoord2f(1, 1);
+	glVertex3f(-1, 1, 1);
+
+	//top
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, 1, 1);
+
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(1, 1, 1);
+
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, 1, -1);
+
+	glNormal3f(0, 1, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(-1, 1, -1);
+
+	//bottom
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, -1, 1);
+
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(1, -1, 1);
+
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, -1, -1);
+
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(-1, -1, -1);
+
+	//left side
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, 1, 1);
+
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(0, 0);
+	glVertex3f(-1, -1, 1);
+
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(-1, -1, -1);
+
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(-1, 1, -1);
+
+	//right side
+	glNormal3f(1, 0, 0);
+	glTexCoord2f(1, 0);
+	glVertex3f(1, 1, 1);
+
+	glNormal3f(1, 0, 0);
+	glVertex3f(1, -1, 1);
+
+	glNormal3f(1, 0, 0);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, -1, -1);
+
+	glNormal3f(1, 0, 0);
+	glTexCoord2f(1, 1);
+	glVertex3f(1, 1, -1);
+
+	//back side
+
+	glNormal3f(0, 0, -1);
+	glTexCoord2f(1, 0);
+	glVertex3f(-1, 1, -1);
+
+	glNormal3f(0, 0, -1);
+	glVertex3f(-1, -1, -1);
+
+	glNormal3f(0, 0, -1);
+	glTexCoord2f(0, 1);
+	glVertex3f(1, -1, -1);
+
+	glNormal3f(0, 0, -1);
+	glTexCoord2f(1, 1);
+	glVertex3f(1, 1, -1);
+
+	glEnd();
+}
 
 void NodeModel::drawGround()
 {
+
 	int size = 300;
 	glColor3f(0.0f, 1.0f, 0.0f);
 	glBegin(GL_QUADS);
@@ -50,12 +161,19 @@ void NodeModel::drawGround()
 		for (int z = 0; z < size * 2; z++)
 		{
 			glNormal3f(0, 1, 0.5);
+			glTexCoord2f(1, 0);
 			glVertex3f(x - size / 2, 1.0f, -z + size / 2);
+
 			glNormal3f(0, 1, 0.5);
+			glTexCoord2f(0, 0);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z + size / 2);
+
 			glNormal3f(0, 1, 0.5);
+			glTexCoord2f(0, 1);
 			glVertex3f(x + 1 - size / 2, 1.0f, -z - 1 + size / 2);
+
 			glNormal3f(0, 1, 0.5);
+			glTexCoord2f(1, 1);
 			glVertex3f(x - size / 2, 1.0f, -z - 1 + size / 2);
 		}
 	}
