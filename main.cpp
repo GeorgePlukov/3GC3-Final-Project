@@ -30,11 +30,16 @@ PVector3f upVec(0, 1, 0);
 PVector3f downVec = -upVec;
 PVector3f leftVec = upVec * forwardVec;
 PVector3f rightVec = -leftVec;
+bool leftMove = false;
+bool upMove = false;
+bool downMove = false;
+bool rightMove = false;
+
 
 /* Camera Vector for translations */
 PVector3f cam(0.0f, 12.0f, 75.0f);
 
-const float cameraSpeed = 0.5f;
+const float cameraSpeed = 0.1f;
 const float mouseSensitivity = 0.01;
 
 /* Light Items */
@@ -62,7 +67,24 @@ int masterID = 0;
 int getID() {
 	return masterID++;
 }
+void lockCamera()
+{
 
+	if (cam.x < -10.0f)
+		cam.x = -10.0f;
+	if (cam.x > 10.0f)
+		cam.x = 10.0f;
+	if (cam.y < 5.0f)
+		cam.y = 5.0f;
+	if (cam.y > 10.0f)
+		cam.y = 10.0f;
+
+	if (zRotation < -20.0f)
+		zRotation = -20.0f;
+	if (zRotation > 20.0f)
+		zRotation = 20.0f;
+
+}
 void generateGround()
 {
 	NodeGroup *group;
@@ -224,6 +246,22 @@ void display()
 		}
 		scorecounter++;
 
+		if (upMove) {
+			moveCamera(upVec, cameraSpeed);
+		}
+		if (leftMove) {
+			moveCamera(leftVec, cameraSpeed);
+			zRotation ++;
+		}
+		if (downMove) {
+			moveCamera(downVec, cameraSpeed);
+		}
+		if (rightMove) {
+			moveCamera(rightVec, cameraSpeed);
+			zRotation--;
+		}
+		lockCamera();
+
 		SG->draw();
 		SG->moveAllBuildingsForward();
 		checkForCrash();
@@ -331,42 +369,45 @@ void display()
 	glutPostRedisplay();
 }
 
-void lockCamera()
-{
-
-	if (cam.x < -10.0f)
-		cam.x = -10.0f;
-	if (cam.x > 10.0f)
-		cam.x = 10.0f;
-	if (cam.y < 5.0f)
-		cam.y = 5.0f;
-	if (cam.y > 10.0f)
-		cam.y = 10.0f;
-
-	if (zRotation < -20.0f)
-		zRotation = -20.0f;
-	if (zRotation > 20.0f)
-		zRotation = 20.0f;
-
-}
-void gameKeyboard(unsigned char key, int x, int y) {
-
+// Controls the wasd keys while the game is being played
+void keyboard_downUp(unsigned char key, int x, int y) {
+	// Toggles whether the keys are being held down or not
 	if (key == 'w')
 	{
-		moveCamera(upVec, cameraSpeed);
+		upMove = false;
 		// SG->getAllBuildingLocations();
 		//xRotation++;
 	} else if (key == 'a') {
-		moveCamera(leftVec, cameraSpeed);
-		zRotation --;
+		leftMove = false;
+
+
 	} else if (key == 's') {
-		moveCamera(downVec, cameraSpeed);
+		downMove = false;
+
 
 	} else if (key == 'd') {
-		moveCamera(rightVec, cameraSpeed);
-		zRotation++;
+		rightMove = false;
 	}
+}
+void gameKeyboard(unsigned char key, int x, int y) {
 
+	// Toggles whether the keys are being held down or not
+	if (key == 'w')
+	{
+		upMove = true;
+		// SG->getAllBuildingLocations();
+		//xRotation++;
+	} else if (key == 'a') {
+		leftMove = true;
+
+
+	} else if (key == 's') {
+		downMove = true;
+
+
+	} else if (key == 'd') {
+		rightMove = true;
+	}
 }
 void mainKeyboard(unsigned char key, int x, int y) {
 	if (key == '1') {
@@ -406,37 +447,11 @@ void kbd(unsigned char key, int x, int y)
 	lockCamera();
 }
 
-
-void special(int key, int x, int y) {
-	switch (currentState) {
-	case GAME:
-		/* Use the arrow keys to move the selected light source around*/
-		switch (key) {
-		/* Rotate Camera*/
-		case GLUT_KEY_LEFT:
-			zRotation--;
-			break;
-		case GLUT_KEY_RIGHT:
-			zRotation++;
-			break;
-		case GLUT_KEY_UP:
-			xRotation--;
-			break;
-		case GLUT_KEY_DOWN:
-			xRotation++;
-			break;
-		}
-		break;
-	}
-	glutPostRedisplay();
-}
-
 void registerCallbacks()
 {
 	glutKeyboardFunc(kbd);
 	glutDisplayFunc(display);
-	glutSpecialFunc(special);
-	//glutPassiveMotionFunc(mouseMotion);
+	glutKeyboardUpFunc(keyboard_downUp);
 }
 
 void init()
