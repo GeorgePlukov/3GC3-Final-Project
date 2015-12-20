@@ -44,7 +44,8 @@ int getID() {
 	return masterID++;
 }
 
-void generateGround() {
+void generateGround() 
+{
 	NodeGroup *group;
 	NodeTransform *rotation, *scale, *translation;
 	NodeModel *model;
@@ -81,8 +82,6 @@ void generateRandomBuildings(int numOfBuildings)
 	NodeTransform *rotation, *scale, *translation;
 	NodeModel *model;
 
-	/* Delete current buildings... If there are no current buildings, delete will just return */
-	SG->deleteBuildings();
 	/* Add 10 buildings for now */
 	for (int i = 1; i <= numOfBuildings; i++)
 	{
@@ -113,43 +112,6 @@ void generateRandomBuildings(int numOfBuildings)
 	}
 }
 
-void tmpBuildings(int i, float z)
-{
-	NodeGroup *group;
-	NodeTransform *rotation, *scale, *translation;
-	NodeModel *model;
-
-	group = new NodeGroup();
-	SG->insertChildNodeHere(group);
-	SG->goToChild(i);
-
-	/*Apply rotation to each model*/
-	rotation = new NodeTransform(Rotate);
-	SG->insertChildNodeHere(rotation);
-	SG->goToChild(0);
-
-	/* Apply scaling to each model*/
-	scale = new NodeTransform(Scale, utils.getRandomBuildingScaling());
-	SG->insertChildNodeHere(scale);
-	SG->goToChild(0);
-
-
-	PPoint3f in_the_dist;
-	in_the_dist.x = 5;
-	in_the_dist.y = 0;
-	in_the_dist.z = z;
-	/* Apply translation to each model*/
-	translation = new NodeTransform(Translate, in_the_dist);
-	SG->insertChildNodeHere(translation);
-	SG->goToChild(0);
-
-	/* Draw each model */
-	model = new NodeModel(Building);
-	SG->insertChildNodeHere(model);
-
-	SG->goToRoot();
-}
-
 /* Moves camera positions along a vector*/
 void moveCamera(PVector3f v, float amt)
 {
@@ -176,7 +138,7 @@ void display()
 	//light1->enable();
 
 	SG->draw();
-	//moveCamera(forwardVec, cameraSpeed);
+	SG->moveAllBuildingsForward();
 
 	glutSwapBuffers();
 
@@ -206,8 +168,6 @@ void lockCamera()
  *  key -- the key pressed
  *  x and y - mouse x and y coordinates at the time the function is called
  */
-float gf = 60;
-int ip = 1;
 void kbd(unsigned char key, int x, int y)
 {
 	/*Esc to exit the program*/
@@ -218,19 +178,7 @@ void kbd(unsigned char key, int x, int y)
 
 	else if (key == 'w')
 	{
-
-		gf -= 5;
-		printf("%f\n", gf);
-		//moveCamera(upVec, cameraSpeed);
-		PPoint3f thiVec(5,0,gf);
-		NodeTransform *translation = new NodeTransform(Translate, thiVec);
-		SG->goToRoot();
-		SG->goToChild(0);
-		SG->goToChild(0);
-		SG->goToChild(0);
-		SG->replaceThisNode(translation);
-
-
+		moveCamera(upVec, cameraSpeed);
 		//xRotation++;
 	} else if (key == 'a')
 	{
@@ -238,7 +186,6 @@ void kbd(unsigned char key, int x, int y)
 		zRotation ++;
 	} else if (key == 'r')
 	{
-		//moveCamera(downVec, cameraSpeed);
 		moveCamera(downVec, cameraSpeed);
 		//xRotation--;
 	} else if (key == 's')
@@ -251,8 +198,8 @@ void kbd(unsigned char key, int x, int y)
 }
 
 
-void special(int key, int x, int y) {
-	/* Use the arrow keys to move the selected light source around*/
+void special(int key, int x, int y) 
+{
 	switch (key) {
 	/* Rotate Camera*/
 	case GLUT_KEY_LEFT:
@@ -262,11 +209,10 @@ void special(int key, int x, int y) {
 		zRotation++;
 		break;
 	case GLUT_KEY_UP:
-		//xRotation--;
-		moveCamera(forwardVec, cameraSpeed);
+		xRotation--;
 		break;
 	case GLUT_KEY_DOWN:
-		moveCamera(backVec, cameraSpeed);
+		xRotation++;
 		break;
 	}
 }
@@ -336,14 +282,12 @@ void init()
 
 	SG = new SceneGraph();
 	generateGround();
-	//generateRandomBuildings(20);
-	tmpBuildings(1, 60);
-
+	generateRandomBuildings(20);
 }
 
 void printStartMenu()
 {
-	// printf("\033[H\033[J");
+	printf("\033[H\033[J");
 	printf("***********************************\n");
 	printf("****           TITLE            ***\n");
 	printf("***********************************\n");

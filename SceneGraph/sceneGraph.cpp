@@ -80,9 +80,8 @@ void SceneGraph::replaceThisNode(Node *node)
 		printf("Cannot replace this node with a parent node\n");
 	} else
 	{
-		printf("Current node ID = %d and is of type %d\n", currentNode->ID, currentNode->nodeType);
 		/* move children of this node to new node */
-		for (int i = 0; i < currentNode->children->size(); ++i)
+		for (int i = 0; i < currentNode->children->size(); i++)
 		{
 			node->children->push_back(currentNode->children->at(i));
 		}
@@ -98,8 +97,7 @@ void SceneGraph::replaceThisNode(Node *node)
 			currentNode->children->pop_back();
 		} else
 		{
-			int size = currentNode->children->size();
-			for (int i = 0; i < size; i++)
+			for (int i = 0; i < currentNode->children->size(); i++)
 			{
 				if (currentNode->children->at(i)->ID == node->ID)
 				{
@@ -111,7 +109,7 @@ void SceneGraph::replaceThisNode(Node *node)
 
 		/* Push new node in place of old node */
 		insertChildNodeHere(node);
-		printf("THe parent node NOW NOW has %d child with ID %d\n", currentNode->children->size(), currentNode->children->at(0)->ID);
+		goToChild(currentNode->children->size()-1);
 	}
 }
 
@@ -121,6 +119,41 @@ void SceneGraph::deleteBuildings()
 	if (currentNode->children->size() > 1)
 	{
 		currentNode->children->erase(currentNode->children->begin()+1, currentNode->children->end());
+	}
+}
+
+void SceneGraph::moveAllBuildingsForward()
+{
+	goToRoot();
+	/* Loop through all the building children */
+	for (int i = 1; i < currentNode->children->size(); i++)
+	{
+		/* Go to Building group node*/
+		goToChild(i);
+		/* Go to transform node... 3 down from the group node */
+		for (int j = 0; j < 3; j++)
+		{
+			goToChild(0);
+		}
+		NodeTransform *translationNode = (NodeTransform*) currentNode;
+		translationNode->amount3.z ++;
+		/* If we have passed the building, move it somewhere else behind the clipping plane*/
+		if (translationNode->amount3.z > 70)
+		{
+			translationNode->amount3 = utils.getRandomBuildingTranslation();
+		}
+		goToRoot();
+	}
+}
+
+NodeTransform* SceneGraph::getCurrentTransformNode()
+{
+	if (currentNode->nodeType == 2)
+	{
+		return (NodeTransform*)currentNode;
+	} else
+	{
+		return 0;
 	}
 }
 

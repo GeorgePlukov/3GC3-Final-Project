@@ -6,6 +6,7 @@
 #include "nodeGroup.h"
 #include "nodeModel.h"
 #include "nodeTransform.h"
+#include "../StarfoxUtils.h"
 
 class SceneGraph
 {
@@ -20,13 +21,16 @@ public:
 	void deleteThisNode();
 	void replaceThisNode(Node *node);
 	void deleteBuildings();
+	void moveAllBuildingsForward();
 	//Scene Graph Draw
 	void draw();
+	NodeTransform* getCurrentTransformNode();
 
 
 private:
 	Node *rootNode;
 	Node *currentNode;
+	StarfoxUtils utils;
 };
 
 #endif
