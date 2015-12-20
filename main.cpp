@@ -48,12 +48,14 @@ SceneGraph *SG;
 /* Texture */
 GLubyte* woodTex, *legoSideTex, *legoTopTex;
 int width, height, maks;
+int scorecounter = 0;
+bool countScore = true;
 GLuint textures[5];
 
 /* Scoreboard */
 int currentScore = 0;
-int * highScore[3];
-char * highNames[3];
+int highScore[] = {40, 12, 3};
+char highNames[3] = {'a', 'g', 'f'};
 /* Node ID's */
 int masterID = 0;
 int getID() {
@@ -141,7 +143,7 @@ void moveCamera(PVector3f v, float amt)
 }
 void recordScore(char name [] , int *score) {
 	for (int s = 0; s < 3; s++) {
-		if (score > highScore[s]) {
+		if (*score > highScore[s]) {
 			if (sizeof(highScore) < s + 2) {
 				highScore[s + 2] = highScore[s + 1];
 				highNames[s + 2] = highNames[s + 1];
@@ -151,12 +153,12 @@ void recordScore(char name [] , int *score) {
 				highNames[s + 1] = highNames[s];
 
 			}
-			highScore[s] = score;
-			highNames[s] = name;
+			highScore[s] = *score;
+			highNames[s] = *name;
 		}
 	}
 	for (int s = 0; s < 3; s++) {
-		printf("%s.%d\n", highNames[s], *highScore[s]);
+		printf("%s.%d\n", highNames[s], highScore[s]);
 	}
 }
 /*
@@ -175,6 +177,7 @@ void display()
 	glRotatef(-xRotation, 1, 0, 0);
 	glRotatef(-yRotation, 0, 1, 0);
 	glRotatef(-zRotation, 0, 0, 1);
+	string a = "Score:";
 
 	// Determine what staet should be drawn for the game
 	switch (currentState) {
@@ -187,8 +190,10 @@ void display()
 		glRasterPos2i(0, 0);
 		glDisable(GL_LIGHTING);
 		glColor3f(0.8, 0.2, 0.3);
-		for (int i = 0; i < sizeof(game); i++)
+		for (int i = 0; i < sizeof(game); i++) {
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, game[i]);
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, game[i]);
+		}
 		glPopMatrix();
 
 		// Game option
@@ -233,59 +238,110 @@ void display()
 
 		break;
 	case GAME:
-		currentScore += 1;
+
+		if (countScore) {
+			currentScore += 1;
+			countScore = false;
+		} 
+		if (scorecounter % 10 == 0){
+			countScore = true;
+		}
+		scorecounter++;
+		printf("%d\n", countScore);
+
 		SG->draw();
 		moveCamera(forwardVec, cameraSpeed);
 		char buff [50];
-		int buffLength;
+		// int buffLength;
 
-		buffLength = sprintf(buff, "Score, harr: %d", currentScore);
+		// buffLength = sprintf(buff, "Score, harr: %d", currentScore);
 		// when the game ends make a call to record the score
-		recordScore(name, &currentScore);
+		// recordScore(name, &currentScore);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		glWindowPos2i(0, 0);
+		glDisable(GL_LIGHTING);
+
+		glColor3f(1.0f, 0.1f, 0.1f);
+		a = a + to_string(currentScore);
+		glScalef(0.3f, 0.3f, 0.0f);
+
+		// Draw the score
+		for (int i = 0; i < a.size(); i++)
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, a.at(i));
+
+		glEnable(GL_LIGHTING);
+
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+
 
 		break;
 	case LEADERBOARD:
-		glPushMatrix();
-		glTranslatef(-18.0f, 20.0f, 0.0f);
-		glScalef(0.05f, 0.1f, 0.1f);
 
-		// draw title
-		glRasterPos2i(0, 0);
-		glDisable(GL_LIGHTING);
-		glColor3f(0.8, 0.2, 0.3);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+		// glRasterPos2i(100, 100);
+		glScalef(0.04f, 0.0001f, 0.0f);
 		for (int i = 0; i < sizeof(leaderboardTitle); i++)
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle[i]);
 		glPopMatrix();
-
-		glPushMatrix();
-		glTranslatef(0.0f, -7.0f, 0.0f);
-
-		for (int s = 3; s > 0; s--) {
-			glPushMatrix();
-			glTranslatef(-18.0f, (s) * 6 , 0.0f);
-			glScalef(0.03f, 0.05f, 0.1f);
-
-			// draw title
-			glRasterPos2i(0, 0);
-			glDisable(GL_LIGHTING);
-			glColor3f(0.8, 0.2, 0.3);
-			if (s == 1) {
-				glutStrokeCharacter(GLUT_STROKE_ROMAN, '3');
-
-
-			} else if (s == 2) {
-				glutStrokeCharacter(GLUT_STROKE_ROMAN, '2');
-			} else if (s == 3) {
-				glutStrokeCharacter(GLUT_STROKE_ROMAN, '1');
-			}
-			glutStrokeCharacter(GLUT_STROKE_ROMAN, '.');
-			glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
-			for (int i = 0; i < sizeof(leaderboardTitle); i++)
-				glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle[i]);
-			glPopMatrix();
-		}
-
+		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
+// 		glPushMatrix();
+// 		// glTranslatef(-18.0f, 20.0f, 0.0f);
+// 		glScalef(0.05f, 0.1f, 0.1f);
+// glPrint("SAMPLE TEXT");
+
+
+		// // draw title
+		// glWindowPos2i(0,10000);
+		// glDisable(GL_LIGHTING);
+		// glColor3f(0.8, 0.2, 0.3);
+		// for (int i = 0; i < sizeof(leaderboardTitle); i++)
+		// 	glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle[i]);
+		// glPopMatrix();
+
+		// glPushMatrix();
+		// glTranslatef(0.0f, -7.0f, 0.0f);
+
+		// for (int s = 3; s > 0; s--) {
+		// 	glPushMatrix();
+		// 	glTranslatef(-18.0f, (s) * 6 , 0.0f);
+		// 	glScalef(0.03f, 0.05f, 0.1f);
+
+		// 	// draw title
+		// 	glRasterPos2i(0, 0);
+		// 	glDisable(GL_LIGHTING);
+		// 	glColor3f(0.8, 0.2, 0.3);
+		// 	if (s == 1) {
+		// 		glutStrokeCharacter(GLUT_STROKE_ROMAN, '3');
+
+
+		// 	} else if (s == 2) {
+		// 		glutStrokeCharacter(GLUT_STROKE_ROMAN, '2');
+		// 	} else if (s == 3) {
+		// 		glutStrokeCharacter(GLUT_STROKE_ROMAN, '1');
+		// 	}
+		// 	glutStrokeCharacter(GLUT_STROKE_ROMAN, '.');
+		// 	glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+
+		// 	glutStrokeCharacter(GLUT_STROKE_ROMAN, highNames[s]);
+		// 	glPopMatrix();
+		// }
+
+		// glPopMatrix();
 		break;
 	}
 
