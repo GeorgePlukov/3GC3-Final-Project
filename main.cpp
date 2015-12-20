@@ -53,7 +53,7 @@ GLuint textures[5];
 /* Scoreboard */
 int currentScore = 0;
 int * highScore[3];
-string * hignNames[3];
+char * highNames[3];
 /* Node ID's */
 int masterID = 0;
 int getID() {
@@ -139,11 +139,24 @@ void moveCamera(PVector3f v, float amt)
 		generateRandomBuildings(20);
 	}
 }
-void recordScore(char name [] , int score){
-	for (int s = 0; s < 3; s++){
-		if (score > highScore[s]){
-			
+void recordScore(char name [] , int *score) {
+	for (int s = 0; s < 3; s++) {
+		if (score > highScore[s]) {
+			if (sizeof(highScore) < s + 2) {
+				highScore[s + 2] = highScore[s + 1];
+				highNames[s + 2] = highNames[s + 1];
+			}
+			if (sizeof(highScore) < s + 1) {
+				highScore[s + 1] = highScore[s];
+				highNames[s + 1] = highNames[s];
+
+			}
+			highScore[s] = score;
+			highNames[s] = name;
 		}
+	}
+	for (int s = 0; s < 3; s++) {
+		printf("%s.%d\n", highNames[s], *highScore[s]);
 	}
 }
 /*
@@ -228,7 +241,7 @@ void display()
 
 		buffLength = sprintf(buff, "Score, harr: %d", currentScore);
 		// when the game ends make a call to record the score
-		recordScore(name, currentScore);
+		recordScore(name, &currentScore);
 
 		break;
 	case LEADERBOARD:
@@ -244,10 +257,39 @@ void display()
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle[i]);
 		glPopMatrix();
 
+		glPushMatrix();
+		glTranslatef(0.0f, -7.0f, 0.0f);
+
+		for (int s = 3; s > 0; s--) {
+			glPushMatrix();
+			glTranslatef(-18.0f, (s) * 6 , 0.0f);
+			glScalef(0.03f, 0.05f, 0.1f);
+
+			// draw title
+			glRasterPos2i(0, 0);
+			glDisable(GL_LIGHTING);
+			glColor3f(0.8, 0.2, 0.3);
+			if (s == 1) {
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, '3');
+
+
+			} else if (s == 2) {
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, '2');
+			} else if (s == 3) {
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, '1');
+			}
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, '.');
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+			for (int i = 0; i < sizeof(leaderboardTitle); i++)
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle[i]);
+			glPopMatrix();
+		}
+
+		glPopMatrix();
 		break;
 	}
-	glutSwapBuffers();
 
+	glutSwapBuffers();
 	glutPostRedisplay();
 }
 
