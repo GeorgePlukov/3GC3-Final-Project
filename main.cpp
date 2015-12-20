@@ -13,8 +13,9 @@ char game[] = { 'G', 'A', 'M', 'E', '\0' };
 char play[] = { '1', '.', 'P', 'l', 'a', 'y', '\0' };
 char leader[] = { '2', '.', 'L', 'e', 'a', 'd', 'e', 'r', 'b', 'o', 'a', 'r', 'd', '\0' };
 char quit[] = { 'E', 'S', 'C', '.', ' ', 'Q', 'u', 'i', 't', '\0' };
-char leaderboardTitle[] = "LeaderBoard\0";
-char name[] = { 'a', 'a', 'a', '\0' };
+string leaderboardTitle = "LeaderBoard";
+string goBack = "Press b to go back";
+
 
 /* Rotations on the 3 axes */
 float xRotation = 0, yRotation = 0, zRotation = 0;
@@ -54,8 +55,8 @@ GLuint textures[5];
 
 /* Scoreboard */
 int currentScore = 0;
-int highScore[] = {40, 12, 3};
-char highNames[3] = {'a', 'g', 'f'};
+int highScore[3];
+string highNames[3];
 /* Node ID's */
 int masterID = 0;
 int getID() {
@@ -141,26 +142,26 @@ void moveCamera(PVector3f v, float amt)
 		generateRandomBuildings(20);
 	}
 }
-void recordScore(char name [] , int *score) {
-	for (int s = 0; s < 3; s++) {
-		if (*score > highScore[s]) {
-			if (sizeof(highScore) < s + 2) {
-				highScore[s + 2] = highScore[s + 1];
-				highNames[s + 2] = highNames[s + 1];
-			}
-			if (sizeof(highScore) < s + 1) {
-				highScore[s + 1] = highScore[s];
-				highNames[s + 1] = highNames[s];
+// void recordScore(string name , int score) {
+// 	for (int s = 0; s < 3; s++) {
+// 		if (*score > highScore[s]) {
+// 			if (sizeof(highScore) < s + 2) {
+// 				highScore[s + 2] = highScore[s + 1];
+// 				highNames[s + 2] = highNames[s + 1];
+// 			}
+// 			if (sizeof(highScore) < s + 1) {
+// 				highScore[s + 1] = highScore[s];
+// 				highNames[s + 1] = highNames[s];
 
-			}
-			highScore[s] = *score;
-			highNames[s] = *name;
-		}
-	}
-	for (int s = 0; s < 3; s++) {
-		printf("%s.%d\n", highNames[s], highScore[s]);
-	}
-}
+// 			}
+// 			highScore[s] = *score;
+// 			highNames[s] = *name;
+// 		}
+// 	}
+// 	for (int s = 0; s < 3; s++) {
+// 		printf("%s.%d\n", highNames[s], highScore[s]);
+// 	}
+// }
 /*
 	Sets up the camera, lighting and materials,
 	then calls the draw function
@@ -179,7 +180,7 @@ void display()
 	glRotatef(-zRotation, 0, 0, 1);
 	string a = "Score:";
 
-	// Determine what staet should be drawn for the game
+	// Determine what state should be drawn for the game
 	switch (currentState) {
 	case MAIN:
 		glPushMatrix();
@@ -222,7 +223,6 @@ void display()
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, leader[i]);
 		glPopMatrix();
 
-		// ESCAPE
 		glPushMatrix();
 
 		glRasterPos2i(0, 0);
@@ -242,8 +242,8 @@ void display()
 		if (countScore) {
 			currentScore += 1;
 			countScore = false;
-		} 
-		if (scorecounter % 10 == 0){
+		}
+		if (scorecounter % 10 == 0) {
 			countScore = true;
 		}
 		scorecounter++;
@@ -252,18 +252,18 @@ void display()
 		SG->draw();
 		moveCamera(forwardVec, cameraSpeed);
 		char buff [50];
-		// int buffLength;
 
-		// buffLength = sprintf(buff, "Score, harr: %d", currentScore);
-		// when the game ends make a call to record the score
-		// recordScore(name, &currentScore);
+		// THis next part is used to display the current score while the game is active
 		glMatrixMode(GL_PROJECTION);
+		// Save our projection states
 		glPushMatrix();
 		glLoadIdentity();
+		// switch too a 2d projection
 		gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glLoadIdentity();
+		// Draw the text to the screen
 		glWindowPos2i(0, 0);
 		glDisable(GL_LIGHTING);
 
@@ -277,6 +277,7 @@ void display()
 
 		glEnable(GL_LIGHTING);
 
+		// Restore the previous settings
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
@@ -284,6 +285,8 @@ void display()
 
 		break;
 	case LEADERBOARD:
+
+		/********** ALL DRAWING FOR SCOREBOARD **************/
 
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
@@ -293,55 +296,23 @@ void display()
 		glPushMatrix();
 		glLoadIdentity();
 		// glRasterPos2i(100, 100);
-		glScalef(0.04f, 0.0001f, 0.0f);
-		for (int i = 0; i < sizeof(leaderboardTitle); i++)
-			glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle[i]);
+		glScalef(0.4f, 0.4f, 0.0f);
+		/********** Leaderboard title **************/
+		for (int i = 0; i < leaderboardTitle.size(); i++)
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle.at(i));
+
+		/*********** Player names and scores *************/
+
+
+		/********** Go Back **************/
+
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
-// 		glPushMatrix();
-// 		// glTranslatef(-18.0f, 20.0f, 0.0f);
-// 		glScalef(0.05f, 0.1f, 0.1f);
-// glPrint("SAMPLE TEXT");
 
 
-		// // draw title
-		// glWindowPos2i(0,10000);
-		// glDisable(GL_LIGHTING);
-		// glColor3f(0.8, 0.2, 0.3);
-		// for (int i = 0; i < sizeof(leaderboardTitle); i++)
-		// 	glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle[i]);
-		// glPopMatrix();
-
-		// glPushMatrix();
-		// glTranslatef(0.0f, -7.0f, 0.0f);
-
-		// for (int s = 3; s > 0; s--) {
-		// 	glPushMatrix();
-		// 	glTranslatef(-18.0f, (s) * 6 , 0.0f);
-		// 	glScalef(0.03f, 0.05f, 0.1f);
-
-		// 	// draw title
-		// 	glRasterPos2i(0, 0);
-		// 	glDisable(GL_LIGHTING);
-		// 	glColor3f(0.8, 0.2, 0.3);
-		// 	if (s == 1) {
-		// 		glutStrokeCharacter(GLUT_STROKE_ROMAN, '3');
 
 
-		// 	} else if (s == 2) {
-		// 		glutStrokeCharacter(GLUT_STROKE_ROMAN, '2');
-		// 	} else if (s == 3) {
-		// 		glutStrokeCharacter(GLUT_STROKE_ROMAN, '1');
-		// 	}
-		// 	glutStrokeCharacter(GLUT_STROKE_ROMAN, '.');
-		// 	glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
-
-		// 	glutStrokeCharacter(GLUT_STROKE_ROMAN, highNames[s]);
-		// 	glPopMatrix();
-		// }
-
-		// glPopMatrix();
 		break;
 	}
 
