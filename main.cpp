@@ -360,11 +360,11 @@ void gameKeyboard(unsigned char key, int x, int y) {
 		moveCamera(leftVec, cameraSpeed);
 		zRotation --;
 	} else if (key == 's') {
-		moveCamera(backVec, cameraSpeed);
+		moveCamera(downVec, cameraSpeed);
 
 	} else if (key == 'd') {
 		moveCamera(rightVec, cameraSpeed);
-		zRotation--;
+		zRotation++;
 	}
 
 }
