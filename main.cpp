@@ -55,8 +55,8 @@ GLuint textures[5];
 
 /* Scoreboard */
 int currentScore = 0;
-int highScore[3];
-string highNames[3];
+int highScore[3] = {100, 10, 1};
+string highNames[3] = {"a", "b", "c"};
 /* Node ID's */
 int masterID = 0;
 int getID() {
@@ -296,22 +296,57 @@ void display()
 		glPushMatrix();
 		glLoadIdentity();
 		// glRasterPos2i(100, 100);
+		glPushMatrix();
+		glDisable(GL_LIGHTING);
+		glTranslatef(WIDTH / 2 - 200, HEIGHT / 2 + 200, 0);
 		glScalef(0.4f, 0.4f, 0.0f);
 		/********** Leaderboard title **************/
 		for (int i = 0; i < leaderboardTitle.size(); i++)
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, leaderboardTitle.at(i));
+		glPopMatrix();
 
 		/*********** Player names and scores *************/
+
+		for (int s = 0; s < 3; s++) {
+			glPushMatrix();
+			glTranslatef(WIDTH / 2 - 200, HEIGHT / 2 - ((s + 1) * 100) + 200, 0);
+			glScalef(0.4f, 0.4f, 0.0f);
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, to_string(s + 1).at(0));
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, '.');
+			glutStrokeCharacter(GLUT_STROKE_ROMAN, ' ');
+
+
+			for (int i = 0; i < highNames[s].size(); i++) {
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, highNames[s].at(i));
+			}
+
+			glTranslatef(400, 0, 0);
+			string str = to_string(highScore[s]);
+
+			for (int i = 0; i < str.size(); i++) {
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, str.at(i));
+			}
+			glPopMatrix();
+		}
 
 
 		/********** Go Back **************/
 
+		glPushMatrix();
+
+		glTranslatef(WIDTH / 2 - 250, 100, 0);
+		glScalef(0.4f, 0.4f, 0.0f);
+		for (int i = 0; i < goBack.size(); i++) {
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, goBack.at(i));
+
+		}
+		glPopMatrix();
+
+// Return our view state back to what it needs to be for 3d drawing
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
-
-
-
+		glEnable(GL_LIGHTING);
 
 		break;
 	}
