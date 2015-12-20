@@ -2,6 +2,7 @@
 #define __SCENEGRAPH_H__
 
 #include <cstdio>
+#include <vector>
 #include "node.h"
 #include "nodeGroup.h"
 #include "nodeModel.h"
@@ -24,13 +25,15 @@ public:
 	void moveAllBuildingsForward();
 	//Scene Graph Draw
 	void draw();
-	NodeTransform* getCurrentTransformNode();
+	std::vector<PPoint3f> getAllBuildingLocations();
 
 
 private:
 	Node *rootNode;
 	Node *currentNode;
 	StarfoxUtils utils;
+	std::vector<PPoint3f> getAllBuildingTranslations();
+	std::vector<PPoint3f> getAllBuildingScales();
 };
 
 #endif

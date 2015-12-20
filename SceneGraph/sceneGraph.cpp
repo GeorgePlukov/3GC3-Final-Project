@@ -130,8 +130,8 @@ void SceneGraph::moveAllBuildingsForward()
 	{
 		/* Go to Building group node*/
 		goToChild(i);
-		/* Go to transform node... 3 down from the group node */
-		for (int j = 0; j < 3; j++)
+		/* Go to transform node... 2 down from the group node */
+		for (int j = 0; j < 2; j++)
 		{
 			goToChild(0);
 		}
@@ -146,15 +146,64 @@ void SceneGraph::moveAllBuildingsForward()
 	}
 }
 
-NodeTransform* SceneGraph::getCurrentTransformNode()
+std::vector<PPoint3f> SceneGraph::getAllBuildingLocations()
 {
-	if (currentNode->nodeType == 2)
+	std::vector<PPoint3f> buildingTranslations = getAllBuildingTranslations();
+	std::vector<PPoint3f> buildingScales = getAllBuildingScales();
+	
+	// if (buildingTranslations.size() != buildingScales.size())
+	// {
+	// 	printf("JOKES\n");
+	// } 
+
+
+}
+
+std::vector<PPoint3f> SceneGraph::getAllBuildingTranslations()
+{
+	std::vector<PPoint3f> buildingTranslations;
+
+	goToRoot();
+	/* Loop through all the building children */
+	for (int i = 1; i < currentNode->children->size(); i++)	
 	{
-		return (NodeTransform*)currentNode;
-	} else
-	{
-		return 0;
+		/* Go to Building group node*/
+		goToChild(i);
+		/* Go to transform node... 2 down from the group node */
+		for (int j = 0; j < 2; j++)
+		{
+			goToChild(0);
+		}
+		NodeTransform *translationNode = (NodeTransform*) currentNode;
+
+		buildingTranslations.push_back(translationNode->amount3);
+		goToRoot();
 	}
+
+	return buildingTranslations;
+
+}
+
+std::vector<PPoint3f> SceneGraph::getAllBuildingScales()
+{
+	std::vector<PPoint3f> buildingScales;
+
+	goToRoot();
+	/* Loop through all the building children */
+	for (int i = 1; i < currentNode->children->size(); i++)	
+	{
+		/* Go to Building group node*/
+		goToChild(i);
+		/* Go to scale node... 1 down from the group node */
+		goToChild(0);
+
+
+		NodeTransform *scaleNode = (NodeTransform*) currentNode;
+		buildingScales.push_back(scaleNode->amount3);
+		goToRoot();
+	}
+
+	return buildingScales;
 }
 
 //draw the scenegraph

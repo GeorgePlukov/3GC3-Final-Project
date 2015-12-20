@@ -54,11 +54,6 @@ void generateGround()
 	SG->insertChildNodeHere(group);
 	SG->goToChild(0);
 
-	/*Apply rotation to ground*/
-	rotation = new NodeTransform(Rotate);
-	SG->insertChildNodeHere(rotation);
-	SG->goToChild(0);
-
 	/* Apply scaling to ground*/
 	scale = new NodeTransform(Scale);
 	SG->insertChildNodeHere(scale);
@@ -89,11 +84,6 @@ void generateRandomBuildings(int numOfBuildings)
 		SG->insertChildNodeHere(group);
 		SG->goToChild(i);
 
-		/*Apply rotation to each model*/
-		rotation = new NodeTransform(Rotate);
-		SG->insertChildNodeHere(rotation);
-		SG->goToChild(0);
-
 		/* Apply scaling to each model*/
 		scale = new NodeTransform(Scale, utils.getRandomBuildingScaling());
 		SG->insertChildNodeHere(scale);
@@ -118,6 +108,11 @@ void moveCamera(PVector3f v, float amt)
 	cam = cam + (v * amt);
 }
 
+void checkForCrash()
+{
+
+}
+
 /*
 	Sets up the camera, lighting and materials,
 	then calls the draw function
@@ -139,6 +134,7 @@ void display()
 
 	SG->draw();
 	SG->moveAllBuildingsForward();
+	checkForCrash();
 
 	glutSwapBuffers();
 
@@ -179,6 +175,7 @@ void kbd(unsigned char key, int x, int y)
 	else if (key == 'w')
 	{
 		moveCamera(upVec, cameraSpeed);
+		SG->getAllBuildingLocations();
 		//xRotation++;
 	} else if (key == 'a')
 	{
