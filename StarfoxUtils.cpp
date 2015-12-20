@@ -8,7 +8,7 @@ StarfoxUtils::StarfoxUtils()
 /* Generate scalings of varying heights*/
 PPoint3f StarfoxUtils::getRandomBuildingScaling()
 {
-	return PPoint3f(1,generateRandomNumber(10,20),1);
+	return PPoint3f(1,generateRandomNumber(7,15),1);
 }
 
 /* Generate translations outside of the clipping plane!*/

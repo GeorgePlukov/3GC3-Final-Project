@@ -150,11 +150,19 @@ std::vector<PPoint3f> SceneGraph::getAllBuildingLocations()
 {
 	std::vector<PPoint3f> buildingTranslations = getAllBuildingTranslations();
 	std::vector<PPoint3f> buildingScales = getAllBuildingScales();
+
+	std::vector<PPoint3f> buildingLocations;
+
+	int size = buildingScales.size();
 	
-	// if (buildingTranslations.size() != buildingScales.size())
-	// {
-	// 	printf("JOKES\n");
-	// } 
+	for (int i = 0; i < size; i++)
+	{
+		PPoint3f location = buildingTranslations[i];
+		location.y = buildingScales[i].y;
+		buildingLocations.push_back(location);
+	}
+
+	return buildingLocations;
 
 
 }

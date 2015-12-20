@@ -79,12 +79,28 @@ void lockCamera()
 	if (cam.y > 10.0f)
 		cam.y = 10.0f;
 
+
 	if (zRotation < -20.0f)
 		zRotation = -20.0f;
 	if (zRotation > 20.0f)
 		zRotation = 20.0f;
 
 }
+
+#include <sstream>
+template <typename T>
+std::string to_string(T value)
+{
+  //create an output string stream
+  std::ostringstream os ;
+
+  //throw the value into the string stream
+  os << value ;
+
+  //convert the string stream into a string and return
+  return os.str() ;
+}
+
 void generateGround()
 {
 	NodeGroup *group;
@@ -151,7 +167,24 @@ void moveCamera(PVector3f v, float amt)
 
 void checkForCrash()
 {
+	std::vector<PPoint3f> buildingLocations = SG->getAllBuildingLocations();
 
+	const float EPSILON = 15.0f;
+
+	for (int i = 0; i < buildingLocations.size(); i++)
+	{
+		if (fabs(buildingLocations[i].z - cam.z ) < EPSILON)
+		{
+			if (fabs(buildingLocations[i].x - cam.x) < 1.0f)
+			{
+				if (fabs(buildingLocations[i].y - cam.y ) < 2.0f)
+				{
+					printf("CRASH\n");
+					break;				}
+			}
+		}
+	}
+	
 }
 // void recordScore(string name , int score) {
 // 	for (int s = 0; s < 3; s++) {
@@ -278,7 +311,6 @@ void display()
 		glPushMatrix();
 		glLoadIdentity();
 		// Draw the text to the screen
-		glWindowPos2i(0, 0);
 		glDisable(GL_LIGHTING);
 
 		glColor3f(1.0f, 0.1f, 0.1f);
@@ -356,7 +388,7 @@ void display()
 		}
 		glPopMatrix();
 
-// Return our view state back to what it needs to be for 3d drawing
+		// Return our view state back to what it needs to be for 3d drawing
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
@@ -399,16 +431,14 @@ void gameKeyboard(unsigned char key, int x, int y) {
 		//xRotation++;
 	} else if (key == 'a') {
 		leftMove = true;
-
-
+		//xRotation++;
 	} else if (key == 's') {
 		downMove = true;
-
-
 	} else if (key == 'd') {
 		rightMove = true;
 	}
 }
+
 void mainKeyboard(unsigned char key, int x, int y) {
 	if (key == '1') {
 		currentState = GAME;
