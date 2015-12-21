@@ -179,13 +179,14 @@ void checkForCrash()
 			{
 				if (fabs(buildingLocations[i].y - cam.y ) < 2.0f)
 				{
-					printf("CRASH\n");
+					//printf("CRASH\n");
 					break;				}
 			}
 		}
 	}
 	
 }
+
 // void recordScore(string name , int score) {
 // 	for (int s = 0; s < 3; s++) {
 // 		if (*score > highScore[s]) {
@@ -407,20 +408,15 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 	if (key == 'w')
 	{
 		upMove = false;
-		// SG->getAllBuildingLocations();
-		//xRotation++;
 	} else if (key == 'a') {
 		leftMove = false;
-
-
 	} else if (key == 's') {
 		downMove = false;
-
-
 	} else if (key == 'd') {
 		rightMove = false;
 	}
 }
+
 void gameKeyboard(unsigned char key, int x, int y) {
 
 	// Toggles whether the keys are being held down or not
@@ -436,6 +432,9 @@ void gameKeyboard(unsigned char key, int x, int y) {
 		downMove = true;
 	} else if (key == 'd') {
 		rightMove = true;
+	} /* Space bar */
+	else if (key == 'e') {
+		SG->destroyBuilding(cam.x, cam.y);
 	}
 }
 
