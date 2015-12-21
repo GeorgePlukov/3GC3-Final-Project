@@ -11,7 +11,7 @@ bool paused = false;
 // Text for the main screen of the game
 
 string game = "Game";
-
+string pause = "PAUSED";
 string menu [3] = {"1. Play", "2. Leaderboard", "ESC. Quit"};
 string leaderboardTitle = "LeaderBoard";
 string goBack = "Press b to go back";
@@ -217,7 +217,6 @@ void display()
 		glPopMatrix();
 
 		/*********** Player names and scores *************/
-
 		for (int s = 0; s < 3; s++) {
 			glPushMatrix();
 			glTranslatef(WIDTH / 2 - 200, HEIGHT / 2 - ((s + 1) * 100) + 200, 0);
@@ -266,8 +265,11 @@ void display()
 			checkForCrash();
 
 		}
-			SG->draw();
+		SG->draw();
 
+
+		/******* Draw all the items that need a 2d projection to be drawn ********/
+		// score, crosshair, paused menu
 		// THis next part is used to display the current score while the game is active
 		glMatrixMode(GL_PROJECTION);
 		// Save our projection states
@@ -283,17 +285,82 @@ void display()
 		glDisable(GL_LIGHTING);
 
 		glColor3f(1.0f, 0.1f, 0.1f);
+
 		a = a + to_string(currentScore);
+		glPushMatrix();
 		glScalef(0.3f, 0.3f, 0.0f);
 
 		// Draw the score
 		for (int i = 0; i < a.size(); i++)
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, a.at(i));
 
-		glEnable(GL_LIGHTING);
-
-		// Restore the previous settings
 		glPopMatrix();
+
+		// Draw the cross hair
+		glLineWidth(2);
+		glPushMatrix();
+		glBegin(GL_LINES);
+		// Top left line
+		glVertex3f(WIDTH / 2 - 140, HEIGHT / 2 + 20, 0);
+		glVertex3f(WIDTH / 2 - 40,  HEIGHT / 2 + 20, 0);
+		// bottom ledt line
+		glVertex3f(WIDTH / 2 - 140, HEIGHT / 2 - 20, 0);
+		glVertex3f(WIDTH / 2 - 40,  HEIGHT / 2 - 20, 0);
+
+		// top right line
+		glVertex3f(WIDTH / 2 + 140, HEIGHT / 2 + 20, 0);
+		glVertex3f(WIDTH / 2 + 40,  HEIGHT / 2 + 20, 0);
+		// bottom right line
+		glVertex3f(WIDTH / 2 + 140, HEIGHT / 2 - 20, 0);
+		glVertex3f(WIDTH / 2 + 40,  HEIGHT / 2 - 20, 0);
+		glEnd();
+
+
+		//# of triangles used to draw circle
+
+		//GLfloat radius = 0.8f; //radius
+		glVertex2f(
+		  WIDTH / 2  + (40 * cos(0*  3.14159265 / 100)),
+		  HEIGHT / 2 + 20 + (40 * sin(0 * 3.1415 / 100))
+		);
+		glBegin(GL_LINES);
+		for (int i = 0; i <= 100; i++) {
+			glVertex2f(
+			  WIDTH / 2  + (40 * cos(i *  3.14159265 / 100)),
+			  HEIGHT / 2 + 20 + (40 * sin(i * 3.1415 / 100))
+			);
+			glVertex2f(
+			  WIDTH / 2  + (40 * cos(i *  3.14159265 / 100)),
+			  HEIGHT / 2 + 20 + (40 * sin(i * 3.1415 / 100))
+			);
+		}
+
+		glEnd();
+
+		glPopMatrix();
+
+
+
+		// DRAW PAUSED IF PAUSED
+		if (paused) {
+
+			glPushMatrix();
+			glLineWidth(3);
+
+			glTranslatef(80, -200, 0);
+
+			glTranslatef(WIDTH / 2 - 175, HEIGHT / 2 + 300, 0);
+			glScalef(0.4f, 0.4f, 0.0f);
+			/********** Leaderboard title **************/
+			for (int i = 0; i < pause.size(); i++)
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, pause.at(i));
+			glPopMatrix();
+		}
+		glLineWidth(1);
+		// Restore the previous settings
+		glEnable(GL_LIGHTING);
+		glPopMatrix();
+
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 
@@ -408,7 +475,7 @@ void gameKeyboard(unsigned char key, int x, int y) {
 
 	} else if (key == 'd') {
 		rightMove = true;
-	} else if (key == 'p'){
+	} else if (key == 'p') {
 		paused = !paused;
 	}
 }
