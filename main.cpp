@@ -11,7 +11,7 @@ bool paused = false;
 bool dead = false;
 // Text for the main screen of the game
 
-string game = "Game";
+string game = "ButFox";
 string pause = "PAUSED";
 string menu [3] = {"1. Play", "2. Leaderboard", "ESC. Quit"};
 string leaderboardTitle = "LeaderBoard";
