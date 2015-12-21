@@ -17,6 +17,7 @@ string menu [3] = {"1. Play", "2. Leaderboard", "ESC. Quit"};
 string leaderboardTitle = "LeaderBoard";
 string goBack = "Press b to go back";
 string lowScore = "Score not high enough!";
+string cont = "Press space to continue";
 
 /* Rotations on the 3 axes */
 float xRotation = 0, yRotation = 0, zRotation = 0;
@@ -288,7 +289,6 @@ void display()
 			if (spaceBarDown) {
 				if (!(shootCount > 50)) {
 					shootCount++;
-
 				}
 			}
 
@@ -405,16 +405,20 @@ void display()
 			/********** Leaderboard title **************/
 			for (int i = 0; i < pause.size(); i++)
 				glutStrokeCharacter(GLUT_STROKE_ROMAN, pause.at(i));
-			}
-			// if you dead say you dead
-			if (dead) {
+		}
+		// if you dead say you dead
+		if (dead) {
 
-				glTranslatef(-1200,-200, 0);
-				for (int i = 0;i < lowScore.size(); i++)
-					glutStrokeCharacter(GLUT_STROKE_ROMAN, lowScore.at(i));
-			}
-			glPopMatrix();
-		
+			glTranslatef(-1200, -200, 0);
+			for (int i = 0; i < lowScore.size(); i++)
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, lowScore.at(i));
+
+			glTranslatef(-1600, -300, 0);
+			for (int i = 0; i < cont.size(); i++)
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, cont.at(i));
+		}
+		glPopMatrix();
+
 		glLineWidth(1);
 		// Restore the previous settings
 		glEnable(GL_LIGHTING);
@@ -510,11 +514,22 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 		rightMove = false;
 	} else if (key == 32) {
 		spaceBarDown = false;
+		if (dead){
+			currentScore = 0;
+			scorecounter=0;
+			shootCount = 0;
+			dead = false;
+			paused = false;
+			SG->deleteBuildings();
+			generateRandomBuildings(20);
+			currentState = LEADERBOARD;
+		}
 		if (shootCount > 50) {
 			// IMMA FIRIN MA LASER
-			printf("ASDJASHDUASHDUHASDUHASUDHASUHD FIRE THE LASERADJASI DASHD UASDU ASUD\n");
+			// printf("ASDJASHDUASHDUHASDUHASUDHASUHD FIRE THE LASERADJASI DASHD UASDU ASUD\n");
 			//SG->destroyBuilding(WIDTH/2, HEIGHT/2);
 		}
+
 		shootCount = 0;
 
 	}
