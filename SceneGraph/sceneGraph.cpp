@@ -138,7 +138,7 @@ void SceneGraph::moveAllBuildingsForward()
 		NodeTransform *translationNode = (NodeTransform*) currentNode;
 		translationNode->amount3.z ++;
 		/* If we have passed the building, move it somewhere else behind the clipping plane*/
-		if (translationNode->amount3.z > 70)
+		if (translationNode->amount3.z > 76)
 		{
 			translationNode->amount3 = utils.getRandomBuildingTranslation();
 		}
@@ -276,7 +276,7 @@ void SceneGraph::destroyBuilding(int x, int y)
 
 		PPoint3f max;
 		max.x = translate->amount3.x + 0.5;
-		max.y = (translate->amount3.y - 0.5) + scale->amount3.y;
+		max.y = (translate->amount3.y - 0.5) + (scale->amount3.y / 2);
 		max.z = translate->amount3.z + 0.5;
 
 		/*
@@ -339,6 +339,7 @@ void SceneGraph::destroyBuilding(int x, int y)
 	}
 	printf("Shape HIT! ID: %d\n", id);
 	scale->amount3.y -= 6;
+	//translate->amount3 = utils.getRandomBuildingTranslation();
 
 
 }

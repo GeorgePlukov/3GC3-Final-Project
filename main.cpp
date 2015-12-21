@@ -179,17 +179,28 @@ void checkForCrash()
 
 	for (int i = 0; i < buildingLocations.size(); i++)
 	{
-		if (fabs(buildingLocations[i].z - cam.z ) < EPSILON)
+		if (buildingLocations[i].z > 75)
 		{
-			if (fabs(buildingLocations[i].x - cam.x) < 1.0f)
+
+			if (fabs(buildingLocations[i].x - cam.x) < 3.0f)
 			{
-				if (fabs(buildingLocations[i].y - cam.y ) < 2.0f)
+				if (cam.y < buildingLocations[i].y)
 				{
-					printf("CRASH\n");
+					printf("CRASH%i\n", i);
 					break;
 				}
 			}
+
+
 		}
+		// printf("BuildLoc %f)\n", buildingLocations[i].x);
+		// printf("cam %f \n", cam.x);
+
+
+		// glPushMatrix();
+		// glTranslatef(buildingLocations[i].x,buildingLocations[i].y, buildingLocations[i].z );
+		// glutSolidSphere(0.5,20,20);
+		// glPopMatrix();
 	}
 
 }
@@ -332,7 +343,6 @@ void display()
 
 		}
 		SG->draw();
-
 
 		/******* Draw all the items that need a 2d projection to be drawn ********/
 		// score, crosshair, paused menu
@@ -530,6 +540,7 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 		if (shootCount > 50) {
 			// IMMA FIRIN MA LASER
 			printf("ASDJASHDUASHDUHASDUHASUDHASUHD FIRE THE LASERADJASI DASHD UASDU ASUD\n");
+			//SG->destroyBuilding(WIDTH/2, HEIGHT/2);
 		}
 		shootCount = 0;
 
@@ -555,6 +566,7 @@ void gameKeyboard(unsigned char key, int x, int y) {
 		paused = !paused;
 	} else if (key == 32) {
 		spaceBarDown = true;
+		SG->destroyBuilding(cam.x, cam.y);
 	}
 }
 
