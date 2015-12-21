@@ -182,7 +182,7 @@ void checkForCrash()
 		if (buildingLocations[i].z > 75)
 		{
 
-			if (fabs(buildingLocations[i].x - cam.x) < 3.0f)
+			if (fabs(buildingLocations[i].x - cam.x) < 1.0f)
 			{
 				if (cam.y < buildingLocations[i].y)
 				{
