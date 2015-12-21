@@ -271,12 +271,12 @@ void SceneGraph::destroyBuilding(int x, int y)
 
 		PPoint3f min;
 		min.x = translate->amount3.x - 0.5;
-		min.y = translate->amount3.y + 0.5;
+		min.y = scale->amount3.y / 2;
 		min.z = translate->amount3.z - 0.5;
 
 		PPoint3f max;
 		max.x = translate->amount3.x + 0.5;
-		max.y = (translate->amount3.y - 0.5) + (scale->amount3.y / 2);
+		max.y =  (scale->amount3.y / 2);
 		max.z = translate->amount3.z + 0.5;
 
 		/*
@@ -337,9 +337,7 @@ void SceneGraph::destroyBuilding(int x, int y)
 		}
 		goToRoot();
 	}
-	printf("Shape HIT! ID: %d\n", id);
-	scale->amount3.y -= 6;
-	//translate->amount3 = utils.getRandomBuildingTranslation();
+	translate->amount3 = utils.getRandomBuildingTranslation();
 
 
 }

@@ -717,7 +717,7 @@ int main(int argc, char** argv)
 	init();
 
 	registerCallbacks();
-	//printStartMenu();
+	printStartMenu();
 
 	//start the program!
 	glutMainLoop();
