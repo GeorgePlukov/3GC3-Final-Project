@@ -661,7 +661,7 @@ void printStartMenu()
 {
 	printf("\033[H\033[J");
 	printf("***********************************\n");
-	printf("****          ShitFox           ***\n");
+	printf("****          ButFox           ***\n");
 	printf("***********************************\n");
 	printf("Instructions:\n");
 	printf("The point of this game is to get the highest score possible.\n");
@@ -670,6 +670,7 @@ void printStartMenu()
 	printf("Use you advanced flying techniques and epic pew pew laser gun\n");
 	printf("to kill the towers and make your family proud!\n");
 	printf("Controls:\n");
+	printf("Press p to pause/resume during the game!\n");
 	printf("Navigate the menus with the corepsponding number.\n");
 	printf("Hit escape at anytime to exit the program\n");
 	printf("Use the WASD keys to navigate the field and charge/fire the laser \n");
@@ -694,8 +695,9 @@ int main(int argc, char** argv)
 	glutInit(&argc, argv);
 	glutInitWindowSize(WIDTH, HEIGHT);
 	centerScreen();
+	printStartMenu();
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("GAMEGAME");
+	glutCreateWindow("ButFox");
 
 	init();
 
