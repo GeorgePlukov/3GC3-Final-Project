@@ -20,7 +20,7 @@ else
 	endif
 endif
 
-PROGRAM_NAME= StarFoxClone
+PROGRAM_NAME= ButFox
 
 #run target to compile and build, and then launch the executable
 run: $(PROGRAM_NAME)
