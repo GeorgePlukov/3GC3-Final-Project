@@ -8,6 +8,7 @@ enum State {MAIN, GAME, LEADERBOARD};
 State currentState = MAIN;
 
 bool paused = false;
+bool dead = true;
 // Text for the main screen of the game
 
 string game = "Game";
@@ -15,7 +16,7 @@ string pause = "PAUSED";
 string menu [3] = {"1. Play", "2. Leaderboard", "ESC. Quit"};
 string leaderboardTitle = "LeaderBoard";
 string goBack = "Press b to go back";
-
+string lowScore = "Score not high enough!";
 
 /* Rotations on the 3 axes */
 float xRotation = 0, yRotation = 0, zRotation = 0;
@@ -60,8 +61,8 @@ GLuint textures[5];
 
 /* Scoreboard */
 int currentScore = 0;
-int highScore[3] = {100, 10, 1};
-string highNames[3] = {"a", "b", "c"};
+int highScore[3] = {12026, 11304, 4514};
+string highNames[3] = {"George", "Philip ", "George"};
 
 /* Shooting the laser goon */
 bool spaceBarDown = false;
@@ -282,6 +283,10 @@ void display()
 	*
 	***********************************/
 	case GAME:
+		if (dead) {
+			paused = true;
+			pause = "DEAD. you dead";
+		}
 		if (!paused) {
 
 			// Check if the score should be updated
@@ -298,7 +303,7 @@ void display()
 			// Increase the counr of the laser fire
 			if (spaceBarDown) {
 				if (!(shootCount > 50)) {
-				shootCount++;
+					shootCount++;
 
 				}
 			}
@@ -387,15 +392,15 @@ void display()
 
 		glPushMatrix();
 		glBegin(GL_QUADS);
-		glColor4f(1.0,0.3,0.3,0.5);
+		glColor4f(1.0, 0.3, 0.3, 0.5);
 		glVertex2f(WIDTH - 70, 30);
 		glVertex2f(WIDTH - 40, 30);
-		glVertex2f(WIDTH - 40, 30 + 3*shootCount);
-		glVertex2f(WIDTH - 70, 30 + 3*shootCount);
+		glVertex2f(WIDTH - 40, 30 + 3 * shootCount);
+		glVertex2f(WIDTH - 70, 30 + 3 * shootCount);
 
 		glEnd();
 		glBegin(GL_LINE_LOOP);
-		glColor4f(1.0,0.3,0.3,1.0);
+		glColor4f(1.0, 0.3, 0.3, 1.0);
 
 		glVertex2f(WIDTH - 70, 30);
 		glVertex2f(WIDTH - 40, 30);
@@ -417,8 +422,16 @@ void display()
 			/********** Leaderboard title **************/
 			for (int i = 0; i < pause.size(); i++)
 				glutStrokeCharacter(GLUT_STROKE_ROMAN, pause.at(i));
+			}
+			// if you dead say you dead
+			if (dead) {
+				printf("asdas\n");
+				glTranslatef(-2000,-200, 0);
+				for (int i = 0;i < lowScore.size(); i++)
+					glutStrokeCharacter(GLUT_STROKE_ROMAN, lowScore.at(i));
+			}
 			glPopMatrix();
-		}
+		
 		glLineWidth(1);
 		// Restore the previous settings
 		glEnable(GL_LIGHTING);
@@ -518,7 +531,7 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 			// IMMA FIRIN MA LASER
 			printf("ASDJASHDUASHDUHASDUHASUDHASUHD FIRE THE LASERADJASI DASHD UASDU ASUD\n");
 		}
-			shootCount = 0;
+		shootCount = 0;
 
 	}
 
