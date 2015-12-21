@@ -193,26 +193,7 @@ void checkForCrash()
 	}
 
 }
-// void recordScore(string name , int score) {
-// 	for (int s = 0; s < 3; s++) {
-// 		if (*score > highScore[s]) {
-// 			if (sizeof(highScore) < s + 2) {
-// 				highScore[s + 2] = highScore[s + 1];
-// 				highNames[s + 2] = highNames[s + 1];
-// 			}
-// 			if (sizeof(highScore) < s + 1) {
-// 				highScore[s + 1] = highScore[s];
-// 				highNames[s + 1] = highNames[s];
 
-// 			}
-// 			highScore[s] = *score;
-// 			highNames[s] = *name;
-// 		}
-// 	}
-// 	for (int s = 0; s < 3; s++) {
-// 		printf("%s.%d\n", highNames[s], highScore[s]);
-// 	}
-// }
 /*
 	Sets up the camera, lighting and materials,
 	then calls the draw function
@@ -417,7 +398,7 @@ void display()
 
 			glTranslatef(80, -200, 0);
 
-			glTranslatef(WIDTH / 2 - 175, HEIGHT / 2 + 300, 0);
+			glTranslatef(WIDTH / 2 - 275, HEIGHT / 2 + 300, 0);
 			glScalef(0.4f, 0.4f, 0.0f);
 			/********** Leaderboard title **************/
 			for (int i = 0; i < pause.size(); i++)
@@ -425,8 +406,8 @@ void display()
 			}
 			// if you dead say you dead
 			if (dead) {
-				printf("asdas\n");
-				glTranslatef(-2000,-200, 0);
+
+				glTranslatef(-1200,-200, 0);
 				for (int i = 0;i < lowScore.size(); i++)
 					glutStrokeCharacter(GLUT_STROKE_ROMAN, lowScore.at(i));
 			}
