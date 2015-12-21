@@ -8,7 +8,7 @@ enum State {MAIN, GAME, LEADERBOARD};
 State currentState = MAIN;
 
 bool paused = false;
-bool dead = true;
+bool dead = false;
 // Text for the main screen of the game
 
 string game = "Game";
@@ -186,21 +186,13 @@ void checkForCrash()
 			{
 				if (cam.y < buildingLocations[i].y)
 				{
-					printf("CRASH%i\n", i);
+					dead = true;
 					break;
 				}
 			}
 
 
 		}
-		// printf("BuildLoc %f)\n", buildingLocations[i].x);
-		// printf("cam %f \n", cam.x);
-
-
-		// glPushMatrix();
-		// glTranslatef(buildingLocations[i].x,buildingLocations[i].y, buildingLocations[i].z );
-		// glutSolidSphere(0.5,20,20);
-		// glPopMatrix();
 	}
 
 }
