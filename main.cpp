@@ -288,7 +288,7 @@ void display()
 			// Increase the counr of the laser fire
 			if (spaceBarDown) {
 				if (!(shootCount > 50)) {
-					shootCount++;
+					shootCount+=2;
 				}
 			}
 
@@ -378,8 +378,8 @@ void display()
 		glColor4f(1.0, 0.3, 0.3, 0.5);
 		glVertex2f(WIDTH - 70, 30);
 		glVertex2f(WIDTH - 40, 30);
-		glVertex2f(WIDTH - 40, 30 + 3 * shootCount);
-		glVertex2f(WIDTH - 70, 30 + 3 * shootCount);
+		glVertex2f(WIDTH - 40, 30 + 2 * shootCount);
+		glVertex2f(WIDTH - 70, 30 + 2 * shootCount);
 
 		glEnd();
 		glBegin(GL_LINE_LOOP);
@@ -514,9 +514,9 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 		rightMove = false;
 	} else if (key == 32) {
 		spaceBarDown = false;
-		if (dead){
+		if (dead) {
 			currentScore = 0;
-			scorecounter=0;
+			scorecounter = 0;
 			shootCount = 0;
 			dead = false;
 			paused = false;
@@ -524,10 +524,9 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 			generateRandomBuildings(20);
 			currentState = LEADERBOARD;
 		}
+		// SHOOT THA LASA
 		if (shootCount > 50) {
-			// IMMA FIRIN MA LASER
-			// printf("ASDJASHDUASHDUHASDUHASUDHASUHD FIRE THE LASERADJASI DASHD UASDU ASUD\n");
-			//SG->destroyBuilding(WIDTH/2, HEIGHT/2);
+			SG->destroyBuilding(cam.x, cam.y);
 		}
 
 		shootCount = 0;
@@ -554,7 +553,6 @@ void gameKeyboard(unsigned char key, int x, int y) {
 		paused = !paused;
 	} else if (key == 32) {
 		spaceBarDown = true;
-		SG->destroyBuilding(cam.x, cam.y);
 	}
 }
 
@@ -578,7 +576,7 @@ void leaderboardKeyboard(unsigned char key, int x, int y) {
 void kbd(unsigned char key, int x, int y)
 {
 	/*Esc to exit the program*/
-	if (key == 27 || key == 'q') {
+	if (key == 27) {
 		exit(0);
 	}
 	switch (currentState) {
