@@ -277,12 +277,13 @@ void display()
 	/**********************************
 	*
 	*
-	*Controls All game state display items
-	* 
-	* 
+	* Controls All game state display items
+	*
+	*
 	***********************************/
 	case GAME:
 		if (!paused) {
+
 			// Check if the score should be updated
 			if (countScore) {
 				// add to the score
@@ -293,9 +294,18 @@ void display()
 				countScore = true;
 			}
 			scorecounter++;
-			// Increase the counr of the laser fire 
-			if (spaceBarDown)
+
+			// Increase the counr of the laser fire
+			if (spaceBarDown) {
+				if (!(shootCount > 50)) {
 				shootCount++;
+
+				}
+			}
+
+			// Moves the camera based on what arrow keys
+			//are currently being held down
+
 			if (upMove) {
 				moveCamera(upVec, cameraSpeed);
 			}
@@ -362,23 +372,37 @@ void display()
 		glVertex3f(WIDTH / 2 + 140, HEIGHT / 2 - 20, 0);
 		glVertex3f(WIDTH / 2 + 25,  HEIGHT / 2 - 20, 0);
 		glEnd();
-
-
-
-		// outre circles
+		// outer circles
 		glBegin(GL_POLYGON);
+		// draw a circular device
 		for (int i = 0; i <= 200; i++) {
 			glColor4f(0.2, 0.8, 0.3, 0.2f);
 			glVertex2f(
 			  WIDTH / 2  + (30 * cos(i *  3.14159265 / 100)),
 			  HEIGHT / 2  + (30 * sin(i * 3.14159265 / 100))
 			);
-
 		}
 		glEnd();
 		glPopMatrix();
 
+		glPushMatrix();
+		glBegin(GL_QUADS);
+		glColor4f(1.0,0.3,0.3,0.5);
+		glVertex2f(WIDTH - 70, 30);
+		glVertex2f(WIDTH - 40, 30);
+		glVertex2f(WIDTH - 40, 30 + 3*shootCount);
+		glVertex2f(WIDTH - 70, 30 + 3*shootCount);
 
+		glEnd();
+		glBegin(GL_LINE_LOOP);
+		glColor4f(1.0,0.3,0.3,1.0);
+
+		glVertex2f(WIDTH - 70, 30);
+		glVertex2f(WIDTH - 40, 30);
+		glVertex2f(WIDTH - 40, 30 + 154);
+		glVertex2f(WIDTH - 70, 30 + 154);
+		glEnd();
+		glPopMatrix();
 
 		// DRAW PAUSED IF PAUSED
 		if (paused) {
@@ -484,12 +508,8 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 		//xRotation++;
 	} else if (key == 'a') {
 		leftMove = false;
-
-
 	} else if (key == 's') {
 		downMove = false;
-
-
 	} else if (key == 'd') {
 		rightMove = false;
 	} else if (key == 32) {
@@ -497,9 +517,11 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 		if (shootCount > 50) {
 			// IMMA FIRIN MA LASER
 			printf("ASDJASHDUASHDUHASDUHASUDHASUHD FIRE THE LASERADJASI DASHD UASDU ASUD\n");
-			shootCount = 0;
 		}
+			shootCount = 0;
+
 	}
+
 }
 void gameKeyboard(unsigned char key, int x, int y) {
 
