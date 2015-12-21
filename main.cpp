@@ -7,11 +7,11 @@ const float ASPECT = WIDTH / HEIGHT;
 enum State {MAIN, GAME, LEADERBOARD};
 State currentState = MAIN;
 
-
+bool paused = false;
 // Text for the main screen of the game
 
 string game = "Game";
-
+string pause = "PAUSED";
 string menu [3] = {"1. Play", "2. Leaderboard", "ESC. Quit"};
 string leaderboardTitle = "LeaderBoard";
 string goBack = "Press b to go back";
@@ -62,6 +62,11 @@ GLuint textures[5];
 int currentScore = 0;
 int highScore[3] = {100, 10, 1};
 string highNames[3] = {"a", "b", "c"};
+
+/* Shooting the laser goon */
+bool spaceBarDown = false;
+int shootCount = 0;
+
 /* Node ID's */
 int masterID = 0;
 int getID() {
@@ -91,14 +96,14 @@ void lockCamera()
 template <typename T>
 std::string to_string(T value)
 {
-  //create an output string stream
-  std::ostringstream os ;
+	//create an output string stream
+	std::ostringstream os ;
 
-  //throw the value into the string stream
-  os << value ;
+	//throw the value into the string stream
+	os << value ;
 
-  //convert the string stream into a string and return
-  return os.str() ;
+	//convert the string stream into a string and return
+	return os.str() ;
 }
 
 void generateGround()
@@ -179,14 +184,14 @@ void checkForCrash()
 			{
 				if (fabs(buildingLocations[i].y - cam.y ) < 2.0f)
 				{
-					//printf("CRASH\n");
-					break;				}
+					printf("CRASH\n");
+					break;
+				}
 			}
 		}
 	}
-	
-}
 
+}
 // void recordScore(string name , int score) {
 // 	for (int s = 0; s < 3; s++) {
 // 		if (*score > highScore[s]) {
@@ -251,7 +256,6 @@ void display()
 		glPopMatrix();
 
 		/*********** Player names and scores *************/
-
 		for (int s = 0; s < 3; s++) {
 			glPushMatrix();
 			glTranslatef(WIDTH / 2 - 200, HEIGHT / 2 - ((s + 1) * 100) + 200, 0);
@@ -269,38 +273,64 @@ void display()
 		glPopMatrix();
 		glEnable(GL_LIGHTING);
 		break;
+
+	/**********************************
+	*
+	*
+	* Controls All game state display items
+	*
+	*
+	***********************************/
 	case GAME:
+		if (!paused) {
 
-		if (countScore) {
-			currentScore += 1;
-			countScore = false;
-		}
-		if (scorecounter % 10 == 0) {
-			countScore = true;
-		}
-		scorecounter++;
+			// Check if the score should be updated
+			if (countScore) {
+				// add to the score
+				currentScore += 1;
+				countScore = false;
+			}
+			if (scorecounter % 10 == 0) {
+				countScore = true;
+			}
+			scorecounter++;
 
-		if (upMove) {
-			moveCamera(upVec, cameraSpeed);
-		}
-		if (leftMove) {
-			moveCamera(leftVec, cameraSpeed);
-			zRotation ++;
-		}
-		if (downMove) {
-			moveCamera(downVec, cameraSpeed);
-		}
-		if (rightMove) {
-			moveCamera(rightVec, cameraSpeed);
-			zRotation--;
-		}
-		lockCamera();
+			// Increase the counr of the laser fire
+			if (spaceBarDown) {
+				if (!(shootCount > 50)) {
+				shootCount++;
 
+				}
+			}
+
+			// Moves the camera based on what arrow keys
+			//are currently being held down
+
+			if (upMove) {
+				moveCamera(upVec, cameraSpeed);
+			}
+			if (leftMove) {
+				moveCamera(leftVec, cameraSpeed);
+				zRotation ++;
+			}
+			if (downMove) {
+				moveCamera(downVec, cameraSpeed);
+			}
+			if (rightMove) {
+				moveCamera(rightVec, cameraSpeed);
+				zRotation--;
+			}
+			lockCamera();
+
+			SG->moveAllBuildingsForward();
+			checkForCrash();
+
+		}
 		SG->draw();
-		SG->moveAllBuildingsForward();
-		checkForCrash();
 
 
+		/******* Draw all the items that need a 2d projection to be drawn ********/
+		// score, crosshair, paused menu
 		// THis next part is used to display the current score while the game is active
 		glMatrixMode(GL_PROJECTION);
 		// Save our projection states
@@ -314,18 +344,86 @@ void display()
 		// Draw the text to the screen
 		glDisable(GL_LIGHTING);
 
-		glColor3f(1.0f, 0.1f, 0.1f);
 		a = a + to_string(currentScore);
+		glPushMatrix();
 		glScalef(0.3f, 0.3f, 0.0f);
 
 		// Draw the score
 		for (int i = 0; i < a.size(); i++)
 			glutStrokeCharacter(GLUT_STROKE_ROMAN, a.at(i));
 
-		glEnable(GL_LIGHTING);
-
-		// Restore the previous settings
 		glPopMatrix();
+
+		// Draw the cross hair
+		glLineWidth(2);
+		glPushMatrix();
+		glBegin(GL_LINES);
+		// Top left line
+		glVertex3f(WIDTH / 2 - 140, HEIGHT / 2 + 20, 0);
+		glVertex3f(WIDTH / 2 - 25,  HEIGHT / 2 + 20, 0);
+		// bottom ledt line
+		glVertex3f(WIDTH / 2 - 140, HEIGHT / 2 - 20, 0);
+		glVertex3f(WIDTH / 2 - 25,  HEIGHT / 2 - 20, 0);
+
+		// top right line
+		glVertex3f(WIDTH / 2 + 140, HEIGHT / 2 + 20, 0);
+		glVertex3f(WIDTH / 2 + 25,  HEIGHT / 2 + 20, 0);
+		// bottom right line
+		glVertex3f(WIDTH / 2 + 140, HEIGHT / 2 - 20, 0);
+		glVertex3f(WIDTH / 2 + 25,  HEIGHT / 2 - 20, 0);
+		glEnd();
+		// outer circles
+		glBegin(GL_POLYGON);
+		// draw a circular device
+		for (int i = 0; i <= 200; i++) {
+			glColor4f(0.2, 0.8, 0.3, 0.2f);
+			glVertex2f(
+			  WIDTH / 2  + (30 * cos(i *  3.14159265 / 100)),
+			  HEIGHT / 2  + (30 * sin(i * 3.14159265 / 100))
+			);
+		}
+		glEnd();
+		glPopMatrix();
+
+		glPushMatrix();
+		glBegin(GL_QUADS);
+		glColor4f(1.0,0.3,0.3,0.5);
+		glVertex2f(WIDTH - 70, 30);
+		glVertex2f(WIDTH - 40, 30);
+		glVertex2f(WIDTH - 40, 30 + 3*shootCount);
+		glVertex2f(WIDTH - 70, 30 + 3*shootCount);
+
+		glEnd();
+		glBegin(GL_LINE_LOOP);
+		glColor4f(1.0,0.3,0.3,1.0);
+
+		glVertex2f(WIDTH - 70, 30);
+		glVertex2f(WIDTH - 40, 30);
+		glVertex2f(WIDTH - 40, 30 + 154);
+		glVertex2f(WIDTH - 70, 30 + 154);
+		glEnd();
+		glPopMatrix();
+
+		// DRAW PAUSED IF PAUSED
+		if (paused) {
+
+			glPushMatrix();
+			glLineWidth(3);
+
+			glTranslatef(80, -200, 0);
+
+			glTranslatef(WIDTH / 2 - 175, HEIGHT / 2 + 300, 0);
+			glScalef(0.4f, 0.4f, 0.0f);
+			/********** Leaderboard title **************/
+			for (int i = 0; i < pause.size(); i++)
+				glutStrokeCharacter(GLUT_STROKE_ROMAN, pause.at(i));
+			glPopMatrix();
+		}
+		glLineWidth(1);
+		// Restore the previous settings
+		glEnable(GL_LIGHTING);
+		glPopMatrix();
+
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 
@@ -353,7 +451,6 @@ void display()
 		glPopMatrix();
 
 		/*********** Player names and scores *************/
-
 		for (int s = 0; s < 3; s++) {
 			glPushMatrix();
 			glTranslatef(WIDTH / 2 - 200, HEIGHT / 2 - ((s + 1) * 100) + 200, 0);
@@ -378,7 +475,6 @@ void display()
 
 
 		/********** Go Back **************/
-
 		glPushMatrix();
 
 		glTranslatef(WIDTH / 2 - 250, 100, 0);
@@ -408,15 +504,25 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 	if (key == 'w')
 	{
 		upMove = false;
+		// SG->getAllBuildingLocations();
+		//xRotation++;
 	} else if (key == 'a') {
 		leftMove = false;
 	} else if (key == 's') {
 		downMove = false;
 	} else if (key == 'd') {
 		rightMove = false;
-	}
-}
+	} else if (key == 32) {
+		spaceBarDown = false;
+		if (shootCount > 50) {
+			// IMMA FIRIN MA LASER
+			printf("ASDJASHDUASHDUHASDUHASUDHASUHD FIRE THE LASERADJASI DASHD UASDU ASUD\n");
+		}
+			shootCount = 0;
 
+	}
+
+}
 void gameKeyboard(unsigned char key, int x, int y) {
 
 	// Toggles whether the keys are being held down or not
@@ -432,9 +538,10 @@ void gameKeyboard(unsigned char key, int x, int y) {
 		downMove = true;
 	} else if (key == 'd') {
 		rightMove = true;
-	} /* Space bar */
-	else if (key == 'e') {
-		SG->destroyBuilding(cam.x, cam.y);
+	} else if (key == 'p') {
+		paused = !paused;
+	} else if (key == 32) {
+		spaceBarDown = true;
 	}
 }
 
@@ -489,7 +596,8 @@ void init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable( GL_BLEND );
 	glEnable(GL_TEXTURE_2D);
 	//generate 2 texture IDs, store them in array "textures"
 	glGenTextures(5, textures);
