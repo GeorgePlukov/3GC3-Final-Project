@@ -284,8 +284,6 @@ void display()
 		glWindowPos2i(0, 0);
 		glDisable(GL_LIGHTING);
 
-		glColor3f(1.0f, 0.1f, 0.1f);
-
 		a = a + to_string(currentScore);
 		glPushMatrix();
 		glScalef(0.3f, 0.3f, 0.0f);
@@ -302,41 +300,32 @@ void display()
 		glBegin(GL_LINES);
 		// Top left line
 		glVertex3f(WIDTH / 2 - 140, HEIGHT / 2 + 20, 0);
-		glVertex3f(WIDTH / 2 - 40,  HEIGHT / 2 + 20, 0);
+		glVertex3f(WIDTH / 2 - 25,  HEIGHT / 2 + 20, 0);
 		// bottom ledt line
 		glVertex3f(WIDTH / 2 - 140, HEIGHT / 2 - 20, 0);
-		glVertex3f(WIDTH / 2 - 40,  HEIGHT / 2 - 20, 0);
+		glVertex3f(WIDTH / 2 - 25,  HEIGHT / 2 - 20, 0);
 
 		// top right line
 		glVertex3f(WIDTH / 2 + 140, HEIGHT / 2 + 20, 0);
-		glVertex3f(WIDTH / 2 + 40,  HEIGHT / 2 + 20, 0);
+		glVertex3f(WIDTH / 2 + 25,  HEIGHT / 2 + 20, 0);
 		// bottom right line
 		glVertex3f(WIDTH / 2 + 140, HEIGHT / 2 - 20, 0);
-		glVertex3f(WIDTH / 2 + 40,  HEIGHT / 2 - 20, 0);
+		glVertex3f(WIDTH / 2 + 25,  HEIGHT / 2 - 20, 0);
 		glEnd();
 
 
-		//# of triangles used to draw circle
 
-		//GLfloat radius = 0.8f; //radius
-		glVertex2f(
-		  WIDTH / 2  + (40 * cos(0*  3.14159265 / 100)),
-		  HEIGHT / 2 + 20 + (40 * sin(0 * 3.1415 / 100))
-		);
-		glBegin(GL_LINES);
-		for (int i = 0; i <= 100; i++) {
+		// outre circles
+		glBegin(GL_POLYGON);
+		for (int i = 0; i <= 200; i++) {
+			glColor4f(0.2, 0.8, 0.3, 0.2f);
 			glVertex2f(
-			  WIDTH / 2  + (40 * cos(i *  3.14159265 / 100)),
-			  HEIGHT / 2 + 20 + (40 * sin(i * 3.1415 / 100))
+			  WIDTH / 2  + (30 * cos(i *  3.14159265 / 100)),
+			  HEIGHT / 2  + (30 * sin(i * 3.14159265 / 100))
 			);
-			glVertex2f(
-			  WIDTH / 2  + (40 * cos(i *  3.14159265 / 100)),
-			  HEIGHT / 2 + 20 + (40 * sin(i * 3.1415 / 100))
-			);
+
 		}
-
 		glEnd();
-
 		glPopMatrix();
 
 
@@ -388,7 +377,6 @@ void display()
 		glPopMatrix();
 
 		/*********** Player names and scores *************/
-
 		for (int s = 0; s < 3; s++) {
 			glPushMatrix();
 			glTranslatef(WIDTH / 2 - 200, HEIGHT / 2 - ((s + 1) * 100) + 200, 0);
@@ -413,7 +401,6 @@ void display()
 
 
 		/********** Go Back **************/
-
 		glPushMatrix();
 
 		glTranslatef(WIDTH / 2 - 250, 100, 0);
@@ -424,7 +411,7 @@ void display()
 		}
 		glPopMatrix();
 
-// Return our view state back to what it needs to be for 3d drawing
+		// Return our view state back to what it needs to be for 3d drawing
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
@@ -530,7 +517,8 @@ void init()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);
-
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable( GL_BLEND );
 	glEnable(GL_TEXTURE_2D);
 	//generate 2 texture IDs, store them in array "textures"
 	glGenTextures(5, textures);
