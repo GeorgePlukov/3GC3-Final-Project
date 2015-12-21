@@ -62,6 +62,11 @@ GLuint textures[5];
 int currentScore = 0;
 int highScore[3] = {100, 10, 1};
 string highNames[3] = {"a", "b", "c"};
+
+/* Shooting the laser goon */
+bool spaceBarDown = false;
+int shootCount = 0;
+
 /* Node ID's */
 int masterID = 0;
 int getID() {
@@ -91,14 +96,14 @@ void lockCamera()
 template <typename T>
 std::string to_string(T value)
 {
-  //create an output string stream
-  std::ostringstream os ;
+	//create an output string stream
+	std::ostringstream os ;
 
-  //throw the value into the string stream
-  os << value ;
+	//throw the value into the string stream
+	os << value ;
 
-  //convert the string stream into a string and return
-  return os.str() ;
+	//convert the string stream into a string and return
+	return os.str() ;
 }
 
 void generateGround()
@@ -180,11 +185,12 @@ void checkForCrash()
 				if (fabs(buildingLocations[i].y - cam.y ) < 2.0f)
 				{
 					printf("CRASH\n");
-					break;				}
+					break;
+				}
 			}
 		}
 	}
-	
+
 }
 // void recordScore(string name , int score) {
 // 	for (int s = 0; s < 3; s++) {
@@ -267,9 +273,19 @@ void display()
 		glPopMatrix();
 		glEnable(GL_LIGHTING);
 		break;
+
+	/**********************************
+	*
+	*
+	*Controls All game state display items
+	* 
+	* 
+	***********************************/
 	case GAME:
 		if (!paused) {
+			// Check if the score should be updated
 			if (countScore) {
+				// add to the score
 				currentScore += 1;
 				countScore = false;
 			}
@@ -277,7 +293,9 @@ void display()
 				countScore = true;
 			}
 			scorecounter++;
-
+			// Increase the counr of the laser fire 
+			if (spaceBarDown)
+				shootCount++;
 			if (upMove) {
 				moveCamera(upVec, cameraSpeed);
 			}
@@ -474,6 +492,13 @@ void keyboard_downUp(unsigned char key, int x, int y) {
 
 	} else if (key == 'd') {
 		rightMove = false;
+	} else if (key == 32) {
+		spaceBarDown = false;
+		if (shootCount > 50) {
+			// IMMA FIRIN MA LASER
+			printf("ASDJASHDUASHDUHASDUHASUDHASUHD FIRE THE LASERADJASI DASHD UASDU ASUD\n");
+			shootCount = 0;
+		}
 	}
 }
 void gameKeyboard(unsigned char key, int x, int y) {
@@ -493,6 +518,8 @@ void gameKeyboard(unsigned char key, int x, int y) {
 		rightMove = true;
 	} else if (key == 'p') {
 		paused = !paused;
+	} else if (key == 32) {
+		spaceBarDown = true;
 	}
 }
 
