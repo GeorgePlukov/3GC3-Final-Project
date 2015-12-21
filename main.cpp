@@ -378,8 +378,8 @@ void display()
 		glColor4f(1.0, 0.3, 0.3, 0.5);
 		glVertex2f(WIDTH - 70, 30);
 		glVertex2f(WIDTH - 40, 30);
-		glVertex2f(WIDTH - 40, 30 + 2 * shootCount);
-		glVertex2f(WIDTH - 70, 30 + 2 * shootCount);
+		glVertex2f(WIDTH - 40, 27 + 3 * shootCount);
+		glVertex2f(WIDTH - 70, 27 + 3 * shootCount);
 
 		glEnd();
 		glBegin(GL_LINE_LOOP);
