@@ -214,6 +214,135 @@ std::vector<PPoint3f> SceneGraph::getAllBuildingScales()
 	return buildingScales;
 }
 
+void SceneGraph::destroyBuilding(int x, int y)
+{
+	printf("attempting to destroy building \n");
+	/* Allocate matricies memory */
+	double matModelView[16], matProjection[16];
+	int viewport[4];
+
+	/* Grab the matricies */
+	glGetDoublev(GL_MODELVIEW_MATRIX, matModelView);
+	glGetDoublev(GL_PROJECTION_MATRIX, matProjection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	/* Unproject the values */
+	double winX = (double)x;
+	double winY = viewport[3] - (double)y;
+
+	double start[] = {0,0,0};
+	double end[] = {1,1,1};
+
+	/* Get point on the 'near' plane */
+	gluUnProject(winX, winY, 0.0, matModelView, matProjection,
+         viewport, &start[0], &start[1], &start[2]);
+
+	/* Get point on the 'near' plane */
+	gluUnProject(winX, winY, 1.0, matModelView, matProjection,
+         viewport, &end[0], &end[1], &end[2]);
+
+	/* Make the start and ends PPoint3fs*/
+	PPoint3f startPoint(start[0], start[1], start[2]);
+	PPoint3f endPoint(end[0], end[1], end[2]);
+	/* Get ray direction */
+	PVector3f rayDirection(startPoint, endPoint);
+	rayDirection.normalize();
+
+	NodeTransform *scale, *translate;
+	int id = 0;
+	double smallestTmin = 1000000;
+
+	goToRoot();
+
+	for (int i = 1; i < currentNode->children->size(); i++)
+	{
+		/* This is the group node of the building */
+		goToChild(i);
+		/* This is the scale node of the building */
+		goToChild(0);
+		scale = (NodeTransform*) currentNode;
+		/* This is the translation node of the building*/
+		goToChild(0);
+		translate = (NodeTransform*) currentNode;
+		/* This is the model node of the building */
+		goToChild(0);
+		id = currentNode->ID;
+		
+
+		PPoint3f min;
+		min.x = translate->amount3.x - 0.5;
+		min.y = translate->amount3.y + 0.5;
+		min.z = translate->amount3.z - 0.5;
+
+		PPoint3f max;
+		max.x = translate->amount3.x + 0.5;
+		max.y = (translate->amount3.y - 0.5) + scale->amount3.y;
+		max.z = translate->amount3.z + 0.5;
+
+		/*
+			Check to see if there is a collision with the current
+			shape and the ray cast out;
+		*/
+
+		double tmin = (min.x - startPoint.x) / rayDirection.x;
+		double tmax = (max.x - startPoint.x) / rayDirection.x;
+
+		if (tmin > tmax){
+			std::swap(tmin, tmax);
+		}
+
+		double tymin = (min.y - startPoint.y) / rayDirection.y;
+		double tymax = (max.y - startPoint.y) / rayDirection.y;
+
+		if (tymin > tymax){
+			std::swap(tymin, tymax);
+		}
+
+		if ((tmin > tymax) || (tymin > tmax)) {
+			goToRoot();
+			continue; // no intersection point continue to next bounded box
+		}
+
+		if (tymin > tmin) {
+			tmin = tymin;
+		}
+
+		if (tymax < tmax){
+			tmax = tymax;
+		}
+
+		double tzmin = (min.z - startPoint.z) / rayDirection.z;
+		double tzmax = (max.z - startPoint.z) / rayDirection.z;
+
+		if (tzmin > tzmax){
+			std::swap(tzmin, tzmax);
+		}
+
+		if ((tmin > tzmax) || (tzmin > tmax)){
+			continue; // no intersection point continue to next bounded box
+		}
+
+		if (tzmin > tmin){
+			tmin = tzmin;
+		}
+
+		if (tzmax < tmax){
+			tmax = tzmax;
+		}
+
+		//There is an intersection point. Now we want to check if it is the closest intersection point to our ray.
+		//If so then remove the previous intersection point and set it to this new intersection point.
+		if (tmin < smallestTmin){
+			smallestTmin = tmin;
+		}
+		goToRoot();
+	}
+	printf("Shape HIT! ID: %d\n", id);
+	scale->amount3.y -= 6;
+
+
+}
+
 //draw the scenegraph
 void SceneGraph::draw()
 {
