@@ -8,6 +8,8 @@
 #include "nodeModel.h"
 #include "nodeTransform.h"
 #include "../StarfoxUtils.h"
+#include "../PMath/PPoint.h"
+#include "../PMath/PVector.h"
 
 class SceneGraph
 {
@@ -26,6 +28,7 @@ public:
 	//Scene Graph Draw
 	void draw();
 	std::vector<PPoint3f> getAllBuildingLocations();
+	void destroyBuilding(int x, int y);
 
 
 private:
